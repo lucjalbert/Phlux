@@ -4,12 +4,8 @@
 
 set(SOURCES
     Source/Main.cpp
-    Source/AppLayer.h
-    Source/AppLayer.cpp
-    Source/VoidLayer.h
-    Source/VoidLayer.cpp
-    Source/OverlayLayer.h
-    Source/OverlayLayer.cpp
+    Source/ViewportLayer.h
+    Source/ViewportLayer.cpp
 )
 
 add_executable(App)

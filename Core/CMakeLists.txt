@@ -3,23 +3,14 @@
 #
 
 set(SOURCES
-vendor/stb/stb_image.h
-vendor/stb/stb_image.cpp
 Source/Core/Application.h
 Source/Core/Application.cpp
 Source/Core/Window.h
 Source/Core/Window.cpp
 Source/Core/Layer.h
 Source/Core/Layer.cpp
-Source/Core/Event.h
-Source/Core/WindowEvents.h
-Source/Core/InputEvents.h
-Source/Core/Renderer/Renderer.h
-Source/Core/Renderer/Renderer.cpp
 Source/Core/Renderer/Shader.h
 Source/Core/Renderer/Shader.cpp
-Source/Core/Renderer/GLUtils.h
-Source/Core/Renderer/GLUtils.cpp
 )
 
 add_library(Core STATIC)

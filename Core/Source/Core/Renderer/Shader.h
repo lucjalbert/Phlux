@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glad/gl.h>
+#include <glad/glad.h>
 
 #include <string>
 
@@ -10,6 +10,7 @@ public:
 	// the program ID
 	unsigned int ID;
 
+	Shader() = default;
 	// contructor reads and builds the shader
 	Shader(const char* vertexPath, const char* fragmentPath);
 

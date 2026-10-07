@@ -27,7 +27,7 @@ namespace Core {
 		void Destroy();
 		void Update();
 
-		glm::vec2 GetFrameBufferSize() const;
+		glm::vec2 GetFramebufferSize() const;
 
 		bool ShouldClose() const;
 

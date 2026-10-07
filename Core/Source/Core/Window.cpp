@@ -4,8 +4,11 @@
 
 #include <glm/glm.hpp>
 
+#include <glad/glad.h>
+
 #include <iostream>
 #include <assert.h>
+#include <print>
 
 namespace Core {
 
@@ -32,6 +35,13 @@ namespace Core {
 			std::cerr << "Failed to create GLFW window!\n";
 			assert(false);
 		}
+
+		glfwMakeContextCurrent(m_Handle);
+
+		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+		{
+			std::cout << "Failed to initialize GLAD" << std::endl;
+		}
 	}
 
 	void Window::Destroy()
@@ -48,7 +58,7 @@ namespace Core {
 		glfwSwapBuffers(m_Handle);
 	}
 
-	glm::vec2 Window::GetFrameBufferSize() const
+	glm::vec2 Window::GetFramebufferSize() const
 	{
 		if (m_Handle)
 		{

@@ -1,4 +1,5 @@
 #include "Core/Application.h"
+#include "ViewportLayer.h"
 
 int main()
 {
@@ -8,5 +9,6 @@ int main()
 	appSpec.WindowSpec.Height = 720;
 	
 	Core::Application application(appSpec);
+	application.PushLayer<ViewportLayer>();
 	application.Run();
 }
