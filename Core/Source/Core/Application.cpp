@@ -2,6 +2,7 @@
 
 #include "Window.h"
 #include "Layer.h"
+#include "InputManager/Input.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -28,8 +29,6 @@ namespace Core {
 		glfwSetErrorCallback(GLFWErrorCallback);
 		glfwInit();
 
-		if (!gladLoadGL)
-
 		if (m_Specification.WindowSpec.Title.empty())
 		{
 			m_Specification.WindowSpec.Title = m_Specification.Name;
@@ -37,6 +36,9 @@ namespace Core {
 
 		m_Window = std::make_shared<Window>(m_Specification.WindowSpec);
 		m_Window->Create();
+
+		m_Input = std::make_shared<Input>();
+		m_Input->Init(m_Window->GetHandle());
 	}
 
 	Application::~Application()
@@ -55,6 +57,9 @@ namespace Core {
 
 		while (m_Running)
 		{
+			// Reset inputs that were pressed or released last frame before polling events
+			m_Input->BeginFrame();
+
 			glfwPollEvents();
 
 			if (m_Window->ShouldClose())

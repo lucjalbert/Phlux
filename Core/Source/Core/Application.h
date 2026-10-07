@@ -2,6 +2,7 @@
 
 #include "Window.h"
 #include "Layer.h"
+#include "InputManager/Input.h"
 
 #include <glm/glm.hpp>
 
@@ -33,6 +34,7 @@ namespace Core {
 		}
 
 		std::shared_ptr<Window> GetWindow() const { return m_Window; }
+		std::shared_ptr<Input> GetInputManager() const { return m_Input; }
 
 		static Application& Get();
 		static float GetTime();
@@ -44,5 +46,7 @@ namespace Core {
 		bool m_Running = false;
 
 		std::vector<std::unique_ptr<Layer>> m_LayerStack;
+
+		std::shared_ptr<Input> m_Input;
 	};
 }

@@ -3,6 +3,7 @@
 #include "Core/Application.h"
 #include "Core/Window.h"
 #include "Core/Renderer/Shader.h"
+#include "Core/InputManager/Input.h"
 
 #include <glm/glm.hpp>
 
@@ -69,6 +70,14 @@ ViewportLayer::~ViewportLayer()
 
 void ViewportLayer::OnUpdate(float ts)
 {
+	if (Core::Application::Get().GetInputManager()->IsKeyPressed(GLFW_KEY_SPACE))
+	{
+		glPolygonMode(
+			GL_FRONT_AND_BACK, 
+			m_WireframeMode ? GL_FILL : GL_LINE
+		);
+		m_WireframeMode = !m_WireframeMode;
+	}
 }
 
 void ViewportLayer::OnRender()
