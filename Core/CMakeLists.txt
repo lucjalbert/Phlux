@@ -3,14 +3,18 @@
 #
 
 set(SOURCES
-Source/Core/Application.h
-Source/Core/Application.cpp
-Source/Core/Window.h
-Source/Core/Window.cpp
-Source/Core/Layer.h
-Source/Core/Layer.cpp
-Source/Core/Renderer/Shader.h
-Source/Core/Renderer/Shader.cpp
+    Vendor/stb/stb_image.h
+    Vendor/stb/stb_image.cpp
+    Source/Core/Application.h
+    Source/Core/Application.cpp
+    Source/Core/Window.h
+    Source/Core/Window.cpp
+    Source/Core/Layer.h
+    Source/Core/Layer.cpp
+    Source/Core/Renderer/Shader.h
+    Source/Core/Renderer/Shader.cpp
+    Source/Core/InputManager/Input.h
+    Source/Core/InputManager/Input.cpp
 )
 
 add_library(Core STATIC)

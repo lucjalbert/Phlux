@@ -10,6 +10,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <stb_image.h>
+
 #include <print>
 #include <iostream>
 #include <stdint.h>
@@ -22,10 +24,11 @@ ViewportLayer::ViewportLayer()
 
 	// Quad made out of 2 triangles
 	float vertices[] = {
-		0.5f, 0.5f, 0.0f,	1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, 0.0f,	0.0f, 1.0f, 0.0f,
-		-0.5f, -0.5f, 0.0f,	0.0f, 0.0f, 1.0f,
-		-0.5f, 0.5f, 0.0f,	0.0f, 0.0f, 0.0f,
+		// Position			// Color			// Tex Coords
+		0.5f, 0.5f, 0.0f,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+		0.5f, -0.5f, 0.0f,	0.0f, 1.0f, 0.0f,	1.0f, 0.0f,
+		-0.5f, -0.5f, 0.0f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
+		-0.5f, 0.5f, 0.0f,	0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
 	};
 	unsigned int indices[] = {
 		0, 1, 3,
@@ -48,13 +51,42 @@ ViewportLayer::ViewportLayer()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// Define the way our data is stored
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)0);
 	glEnableVertexAttribArray(0); // Position
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1); // Color
 
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2); // Tex Coords
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	// Load and bind texture
+	uint32_t texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load("Textures/Container.jpg", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+	stbi_image_free(data);
+
+	m_Shader.texture = texture;
 }
 
 ViewportLayer::~ViewportLayer()
@@ -90,6 +122,10 @@ void ViewportLayer::OnRender()
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	m_Shader.setFloat("time", Core::Application::Get().GetTime());
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_Shader.texture);
 	glBindVertexArray(m_VertexArray);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }

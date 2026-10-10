@@ -6,6 +6,10 @@ set(SOURCES
     Source/Main.cpp
     Source/ViewportLayer.h
     Source/ViewportLayer.cpp
+    Shaders/basicTexture.vert
+    Shaders/basicTexture.frag
+    Shaders/colorToPosition.vert
+    Shaders/colorToPosition.frag
 )
 
 add_executable(App)
