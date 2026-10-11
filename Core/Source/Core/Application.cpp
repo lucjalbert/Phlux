@@ -2,7 +2,7 @@
 
 #include "Window.h"
 #include "Layer.h"
-#include "InputManager/Input.h"
+#include "Input/Input.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -37,7 +37,7 @@ namespace Core {
 		m_Window = std::make_shared<Window>(m_Specification.WindowSpec);
 		m_Window->Create();
 
-		m_Input = std::make_shared<Input>();
+		m_Input = std::make_shared<Input::Input>();
 		m_Input->Init(m_Window->GetHandle());
 	}
 

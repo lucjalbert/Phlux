@@ -3,7 +3,8 @@
 #include "Core/Application.h"
 #include "Core/Window.h"
 #include "Core/Renderer/Shader.h"
-#include "Core/InputManager/Input.h"
+#include "Core/Renderer/Texture2D.h"
+#include "Core/Input/Input.h"
 
 #include <glm/glm.hpp>
 
@@ -17,10 +18,9 @@
 #include <stdint.h>
 
 ViewportLayer::ViewportLayer()
+	: m_Shader(Renderer::Shader("Shaders/basicTexture.vert", "Shaders/basicTexture.frag"))
 {
 	std::println("Initializing Viewport Layer");
-
-	m_Shader = Shader("Shaders/basicTexture.vert", "Shaders/basicTexture.frag");
 
 	// Quad made out of 2 triangles
 	float vertices[] = {
@@ -62,31 +62,13 @@ ViewportLayer::ViewportLayer()
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	// Load and bind texture
-	uint32_t texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	// Create texture
+	Renderer::Texture2DSpecification Texture2DSpec;
+	Texture2DSpec.path = "Textures/Container.jpg";
+	std::shared_ptr<Renderer::Texture2D> texture = std::make_shared<Renderer::Texture2D>(Texture2DSpec);
+	texture->Load();
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	int width, height, nrChannels;
-	unsigned char* data = stbi_load("Textures/Container.jpg", &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-	}
-	stbi_image_free(data);
-
-	m_Shader.texture = texture;
+	m_Shader.AddTexture(texture);
 }
 
 ViewportLayer::~ViewportLayer()
@@ -95,7 +77,7 @@ ViewportLayer::~ViewportLayer()
 	glDeleteBuffers(1, &m_ElementBuffer);
 	glDeleteBuffers(1, &m_VertexArray);
 
-	glDeleteProgram(m_Shader.ID);
+	m_Shader.Destroy();
 
 	std::println("Destroying Viewport Layer");
 }
@@ -114,7 +96,7 @@ void ViewportLayer::OnUpdate(float ts)
 
 void ViewportLayer::OnRender()
 {
-	m_Shader.use();
+	m_Shader.Use();
 
 	glm::vec2 framebufferSize = Core::Application::Get().GetFramebufferSize();
 	glViewport(0, 0, static_cast<GLsizei>(framebufferSize.x), static_cast<GLsizei>(framebufferSize.y));
@@ -122,10 +104,9 @@ void ViewportLayer::OnRender()
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	m_Shader.setFloat("time", Core::Application::Get().GetTime());
+	m_Shader.SetFloat("time", Core::Application::Get().GetTime());
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_Shader.texture);
+	m_Shader.UseTexture(0, GL_TEXTURE0);
 	glBindVertexArray(m_VertexArray);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }

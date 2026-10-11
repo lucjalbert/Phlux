@@ -1,24 +1,36 @@
 #pragma once
 
+#include "Core/Renderer/Texture2D.h"
+
 #include <glad/glad.h>
 
 #include <string>
+#include <vector>
+#include <memory>
 
-class Shader
-{
-public:
-	// the program ID
-	unsigned int ID;
+namespace Renderer {
 
-	uint32_t texture;
+	class Shader
+	{
+	public:
+		static constexpr std::size_t MaxTextures = 16;
 
-	Shader() = default;
-	// contructor reads and builds the shader
-	Shader(const char* vertexPath, const char* fragmentPath);
+		Shader(const char* vertexPath, const char* fragmentPath);
+		~Shader();
 
-	// Utility functions
-	void use();
-	void setBool(const std::string& name, bool value) const;
-	void setInt(const std::string& name, int value) const;
-	void setFloat(const std::string& name, float value) const;
-};
+		void Destroy();
+
+		void Use();
+		void SetBool(const std::string& name, bool value) const;
+		void SetInt(const std::string& name, int value) const;
+		void SetFloat(const std::string& name, float value) const;
+
+		void AddTexture(std::shared_ptr<Texture2D> texture);
+		void UseTexture(uint32_t index, GLenum textureUnit);
+
+	private:
+		GLuint m_ID;
+		std::vector<std::shared_ptr<Texture2D>> m_Textures;
+	};
+}
+

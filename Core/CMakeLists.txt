@@ -13,8 +13,10 @@ set(SOURCES
     Source/Core/Layer.cpp
     Source/Core/Renderer/Shader.h
     Source/Core/Renderer/Shader.cpp
-    Source/Core/InputManager/Input.h
-    Source/Core/InputManager/Input.cpp
+    Source/Core/Renderer/Texture2D.h
+    Source/Core/Renderer/Texture2D.cpp
+    Source/Core/Input/Input.h
+    Source/Core/Input/Input.cpp
 )
 
 add_library(Core STATIC)

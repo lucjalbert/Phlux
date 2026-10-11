@@ -14,7 +14,7 @@ public:
 	virtual void OnUpdate(float ts) override;
 	virtual void OnRender() override;
 private:
-	Shader m_Shader;
+	Renderer::Shader m_Shader;
 	uint32_t m_VertexArray = 0;
 	uint32_t m_VertexBuffer = 0;
 	uint32_t m_ElementBuffer = 0;
