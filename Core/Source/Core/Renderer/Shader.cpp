@@ -1,11 +1,15 @@
+#include "Shader.h"
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
-
-#include "Shader.h"
 
 namespace Renderer {
 
@@ -118,6 +122,20 @@ namespace Renderer {
 	{
 		glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);
 	}
+	void Shader::SetMat4(const std::string& name, glm::mat4 mat) const
+	{
+		glUniformMatrix4fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+	}
+	void Shader::SetTexture(const std::string& name, uint32_t index, GLenum textureUnit) const
+	{
+		if (index >= m_Textures.size())
+		{
+			std::cout << "Attempted to use a texture that does not exist!" << std::endl;
+		}
+
+		//glUniform1i(glGetUniformLocation(m_ID, name.c_str()), index);
+		m_Textures[index]->Use(textureUnit);
+	}
 
 	void Shader::AddTexture(std::shared_ptr<Texture2D> texture)
 	{
@@ -127,16 +145,6 @@ namespace Renderer {
 		}
 
 		m_Textures.emplace_back(texture);
-	}
-
-	void Shader::UseTexture(uint32_t index, GLenum textureUnit)
-	{
-		if (index >= m_Textures.size())
-		{
-			std::cout << "Attempted to use a texture that does not exist!" << std::endl;
-		}
-
-		m_Textures[index]->Use(textureUnit);
 	}
 }
 

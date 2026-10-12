@@ -7,6 +7,7 @@
 #include "Core/Input/Input.h"
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -69,6 +70,8 @@ ViewportLayer::ViewportLayer()
 	texture->Load();
 
 	m_Shader.AddTexture(texture);
+
+
 }
 
 ViewportLayer::~ViewportLayer()
@@ -105,8 +108,13 @@ void ViewportLayer::OnRender()
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	m_Shader.SetFloat("time", Core::Application::Get().GetTime());
+	m_Shader.SetTexture("ourTexture", 0, GL_TEXTURE0);
 
-	m_Shader.UseTexture(0, GL_TEXTURE0);
+	glm::mat4 trans = glm::mat4(1.0f);
+	trans = glm::rotate(trans, (float)Core::Application::Get().GetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+
+	m_Shader.SetMat4("transform", trans);
+
 	glBindVertexArray(m_VertexArray);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
