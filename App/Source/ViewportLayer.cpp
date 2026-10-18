@@ -5,6 +5,7 @@
 #include "Core/Renderer/Shader.h"
 #include "Core/Renderer/Texture2D.h"
 #include "Core/Input/Input.h"
+#include "Core/Camera/FlyCamera.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -22,6 +23,10 @@ ViewportLayer::ViewportLayer()
 	: m_Shader(Renderer::Shader("Shaders/basicTexture.vert", "Shaders/basicTexture.frag"))
 {
 	std::println("Initializing Viewport Layer");
+
+	// Initialize camera
+	Camera::FlyCameraSpecification flyCameraSpec;
+	m_Camera = Camera::FlyCamera(flyCameraSpec);
 
 	float vertices[] = {
 		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
@@ -78,12 +83,12 @@ ViewportLayer::ViewportLayer()
 	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	// Define the way our data is stored
+	// Define the way our data is stored in memory
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)0);
 	glEnableVertexAttribArray(0); // Position
 
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(2); // Tex Coords
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1); // Tex Coords
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_DEPTH_TEST);
@@ -124,7 +129,7 @@ void ViewportLayer::OnUpdate(float deltaTime)
 		m_PerspectiveMode = !m_PerspectiveMode;
 	}
 
-	// Camera direction
+	// Handle camera cursor permissions
 	if (Core::Application::Get().GetInputManager()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_2))
 	{
 		m_CameraMode = true;
@@ -138,33 +143,22 @@ void ViewportLayer::OnUpdate(float deltaTime)
 
 	if (m_CameraMode)
 	{
-		m_CameraYaw += Core::Application::Get().GetInputManager()->GetMouseDeltaPosX() * m_CameraSensitivity;
-		m_CameraPitch += Core::Application::Get().GetInputManager()->GetMouseDeltaPosY() * m_CameraSensitivity * -1.0f;
-
-		if (m_CameraPitch > 89.0f)
-			m_CameraPitch = 89.0f;
-		if (m_CameraPitch < -89.0f)
-			m_CameraPitch = -89.0f;
-
-		m_CameraDirection.x = cos(glm::radians(m_CameraYaw)) * cos(glm::radians(m_CameraPitch));
-		m_CameraDirection.y = sin(glm::radians(m_CameraPitch));
-		m_CameraDirection.z = sin(glm::radians(m_CameraYaw)) * cos(glm::radians(m_CameraPitch));
-		m_CameraFront = glm::normalize(m_CameraDirection);
+		// Camera direction
+		m_Camera.UpdateCameraRotation(Core::Application::Get().GetInputManager()->GetMouseDeltaPosX(), Core::Application::Get().GetInputManager()->GetMouseDeltaPosY());
 
 		// Camera position
-		float cameraSpeed = static_cast<float>(m_BaseCameraSpeed * deltaTime);
-		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_W)) // Forward
-			m_CameraPos += cameraSpeed * m_CameraFront;
-		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_S)) // Backward
-			m_CameraPos -= cameraSpeed * m_CameraFront;
-		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_D)) // Right
-			m_CameraPos += cameraSpeed * glm::normalize(glm::cross(m_CameraFront, m_CameraUp));
-		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_A)) // Left
-			m_CameraPos -= cameraSpeed * glm::normalize(glm::cross(m_CameraFront, m_CameraUp));
-		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_E)) // Up
-			m_CameraPos += cameraSpeed * m_CameraUp;
-		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_Q)) // Down
-			m_CameraPos -= cameraSpeed * m_CameraUp;
+		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_W))
+			m_Camera.UpdateCameraPosition(Camera::CameraDirection::FORWARD, deltaTime);
+		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_S))
+			m_Camera.UpdateCameraPosition(Camera::CameraDirection::BACKWARD, deltaTime);
+		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_D))
+			m_Camera.UpdateCameraPosition(Camera::CameraDirection::RIGHT, deltaTime);
+		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_A))
+			m_Camera.UpdateCameraPosition(Camera::CameraDirection::LEFT, deltaTime);
+		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_E))
+			m_Camera.UpdateCameraPosition(Camera::CameraDirection::UP, deltaTime);
+		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_Q))
+			m_Camera.UpdateCameraPosition(Camera::CameraDirection::DOWN, deltaTime);
 	}
 }
 
@@ -195,7 +189,7 @@ void ViewportLayer::OnRender()
 	};
 
 	glm::mat4 view;
-	view = glm::lookAt(m_CameraPos, m_CameraPos + m_CameraFront, m_CameraUp);
+	view = m_Camera.GetViewMatrix();
 
 	glm::mat4 projection;
 	if (m_PerspectiveMode)
@@ -216,8 +210,10 @@ void ViewportLayer::OnRender()
 	{
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, cubePositions[i]);
+		
 		float angle = 20.f * (i + 1);
 		model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+		
 		m_Shader.SetMat4("model", model);
 		
 		glDrawArrays(GL_TRIANGLES, 0, 36);

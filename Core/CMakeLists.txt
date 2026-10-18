@@ -17,6 +17,8 @@ set(SOURCES
     Source/Core/Renderer/Texture2D.cpp
     Source/Core/Input/Input.h
     Source/Core/Input/Input.cpp
+    Source/Core/Camera/FlyCamera.h
+    Source/Core/Camera/FlyCamera.cpp
 )
 
 add_library(Core STATIC)
