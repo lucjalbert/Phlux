@@ -108,7 +108,7 @@ ViewportLayer::~ViewportLayer()
 	std::println("Destroying Viewport Layer");
 }
 
-void ViewportLayer::OnUpdate(float ts)
+void ViewportLayer::OnUpdate(float deltaTime)
 {
 	if (Core::Application::Get().GetInputManager()->IsKeyPressed(GLFW_KEY_SPACE))
 	{
@@ -124,26 +124,47 @@ void ViewportLayer::OnUpdate(float ts)
 		m_PerspectiveMode = !m_PerspectiveMode;
 	}
 
-	if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_UP))
+	// Camera direction
+	if (Core::Application::Get().GetInputManager()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_2))
 	{
-		m_CameraPos += glm::vec3(0.0f, m_CameraSpeed * ts, 0.0f);
+		m_CameraMode = true;
+		glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
-	if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_DOWN))
+	if (Core::Application::Get().GetInputManager()->IsMouseButtonReleased(GLFW_MOUSE_BUTTON_2))
 	{
-		m_CameraPos += glm::vec3(0.0f, -m_CameraSpeed * ts, 0.0f);
-	}
-	if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_RIGHT))
-	{
-		m_CameraPos += glm::vec3(m_CameraSpeed * ts, 0.0f, 0.0f);
-	}
-	if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_LEFT))
-	{
-		m_CameraPos += glm::vec3(m_CameraSpeed * ts, 0.0f, 0.0f);
+		m_CameraMode = false;
+		glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	}
 
-	if (Core::Application::Get().GetInputManager()->IsKeyPressed(GLFW_KEY_F))
+	if (m_CameraMode)
 	{
-		m_CameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
+		m_CameraYaw += Core::Application::Get().GetInputManager()->GetMouseDeltaPosX() * m_CameraSensitivity;
+		m_CameraPitch += Core::Application::Get().GetInputManager()->GetMouseDeltaPosY() * m_CameraSensitivity * -1.0f;
+
+		if (m_CameraPitch > 89.0f)
+			m_CameraPitch = 89.0f;
+		if (m_CameraPitch < -89.0f)
+			m_CameraPitch = -89.0f;
+
+		m_CameraDirection.x = cos(glm::radians(m_CameraYaw)) * cos(glm::radians(m_CameraPitch));
+		m_CameraDirection.y = sin(glm::radians(m_CameraPitch));
+		m_CameraDirection.z = sin(glm::radians(m_CameraYaw)) * cos(glm::radians(m_CameraPitch));
+		m_CameraFront = glm::normalize(m_CameraDirection);
+
+		// Camera position
+		float cameraSpeed = static_cast<float>(m_BaseCameraSpeed * deltaTime);
+		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_W)) // Forward
+			m_CameraPos += cameraSpeed * m_CameraFront;
+		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_S)) // Backward
+			m_CameraPos -= cameraSpeed * m_CameraFront;
+		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_D)) // Right
+			m_CameraPos += cameraSpeed * glm::normalize(glm::cross(m_CameraFront, m_CameraUp));
+		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_A)) // Left
+			m_CameraPos -= cameraSpeed * glm::normalize(glm::cross(m_CameraFront, m_CameraUp));
+		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_E)) // Up
+			m_CameraPos += cameraSpeed * m_CameraUp;
+		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_Q)) // Down
+			m_CameraPos -= cameraSpeed * m_CameraUp;
 	}
 }
 
@@ -172,15 +193,9 @@ void ViewportLayer::OnRender()
 	glm::vec3(1.5f,  0.2f, -1.5f),
 	glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
-	
-	const float radius = 10.0f;
-	float camX = sin(Core::Application::Get().GetTime()) * radius;
-	float camZ = cos(Core::Application::Get().GetTime()) * radius;
 
 	glm::mat4 view;
-	view = glm::lookAt(glm::vec3(camX, 0.0f, camZ),
-		glm::vec3(m_CameraPos),
-		glm::vec3(0.0f, 1.0f, 0.0f));
+	view = glm::lookAt(m_CameraPos, m_CameraPos + m_CameraFront, m_CameraUp);
 
 	glm::mat4 projection;
 	if (m_PerspectiveMode)
@@ -202,7 +217,7 @@ void ViewportLayer::OnRender()
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, cubePositions[i]);
 		float angle = 20.f * (i + 1);
-		model = glm::rotate(model, (float)Core::Application::Get().GetTime() * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+		model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 		m_Shader.SetMat4("model", model);
 		
 		glDrawArrays(GL_TRIANGLES, 0, 36);

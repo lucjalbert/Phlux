@@ -13,7 +13,7 @@ public:
 	ViewportLayer();
 	virtual ~ViewportLayer();
 
-	virtual void OnUpdate(float ts) override;
+	virtual void OnUpdate(float deltaTime) override;
 	virtual void OnRender() override;
 private:
 	Renderer::Shader m_Shader;
@@ -24,6 +24,16 @@ private:
 	bool m_WireframeMode = false;
 	bool m_PerspectiveMode = true;
 
-	glm::vec3 m_CameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
-	float m_CameraSpeed = 3.0f;
+	bool m_CameraMode = false;
+
+	glm::vec3 m_CameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+	glm::vec3 m_CameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+	glm::vec3 m_CameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	float m_BaseCameraSpeed = 4.0f;
+	float m_CameraSensitivity = 0.1f;
+
+	glm::vec3 m_CameraDirection = glm::vec3(0.0f, 0.0f, 0.0f);
+	float m_CameraYaw = -90.0f;
+	float m_CameraPitch = 0.0f;
 };

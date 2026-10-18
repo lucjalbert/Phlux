@@ -53,7 +53,7 @@ namespace Core {
 	void Application::Run()
 	{
 		m_Running = true;
-		float lastTime = GetTime();
+		float lastFrameTime = 0.0f;
 
 		while (m_Running)
 		{
@@ -68,12 +68,12 @@ namespace Core {
 				break;
 			}
 
-			float currentTime = GetTime();
-			float timestep = glm::clamp(currentTime - lastTime, 0.001f, 0.1f);
-			lastTime = currentTime;
+			float currentFrameTime = GetTime();
+			float deltaTime = currentFrameTime - lastFrameTime;
+			lastFrameTime = currentFrameTime;
 
 			for (const std::unique_ptr<Layer>& layer : m_LayerStack)
-				layer->OnUpdate(timestep);
+				layer->OnUpdate(deltaTime);
 
 			for (const std::unique_ptr<Layer>& layer : m_LayerStack)
 				layer->OnRender();
