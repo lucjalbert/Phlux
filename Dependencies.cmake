@@ -60,3 +60,29 @@ if (NOT glm_FOUND)
     endif()
 endif()
 set_target_properties(glm PROPERTIES FOLDER "Dependencies")
+
+# IMGUI
+FetchContent_Declare(
+    imgui
+    GIT_REPOSITORY https://github.com/ocornut/imgui.git
+    GIT_TAG        v1.93.0
+    GIT_SHALLOW    TRUE
+)
+
+FetchContent_GetProperties(imgui)
+
+if(NOT imgui_POPULATED)
+    FetchContent_Populate(imgui)
+endif()
+
+set(IMGUI_CORE_SOURCES
+"${imgui_SOURCE_DIR}/imgui.cpp"
+"${imgui_SOURCE_DIR}/imgui_draw.cpp"
+"${imgui_SOURCE_DIR}/imgui_tables.cpp"
+"${imgui_SOURCE_DIR}/imgui_widgets.cpp"
+)
+
+set(IMGUI_BACKEND_SOURCES
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp"
+)

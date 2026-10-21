@@ -16,6 +16,7 @@ public:
 
 	virtual void OnUpdate(float deltaTime) override;
 	virtual void OnRender() override;
+	virtual void OnImGuiRender() override;
 private:
 	Renderer::Shader m_Shader;
 	uint32_t m_VertexArray = 0;

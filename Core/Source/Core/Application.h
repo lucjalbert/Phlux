@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "Layer.h"
 #include "Input/Input.h"
+#include "ImGui/ImGuiLayer.h"
 
 #include <glm/glm.hpp>
 
@@ -46,6 +47,7 @@ namespace Core {
 		bool m_Running = false;
 
 		std::vector<std::unique_ptr<Layer>> m_LayerStack;
+		std::unique_ptr<UI::ImGuiLayer> m_ImGuiLayer;
 
 		std::shared_ptr<Input::Input> m_Input;
 	};

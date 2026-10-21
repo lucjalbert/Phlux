@@ -4,7 +4,6 @@
 #include "Layer.h"
 #include "Input/Input.h"
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
@@ -39,11 +38,16 @@ namespace Core {
 
 		m_Input = std::make_shared<Input::Input>();
 		m_Input->Init(m_Window->GetHandle());
+
+		m_ImGuiLayer = std::make_unique<UI::ImGuiLayer>();
+		m_ImGuiLayer->Initialize(m_Window->GetHandle());
 	}
 
 	Application::~Application()
 	{
 		m_Window->Destroy();
+
+		m_ImGuiLayer->Shutdown();
 
 		glfwTerminate();
 
@@ -77,6 +81,13 @@ namespace Core {
 
 			for (const std::unique_ptr<Layer>& layer : m_LayerStack)
 				layer->OnRender();
+
+			m_ImGuiLayer->BeginFrame();
+
+			for (const std::unique_ptr<Layer>& layer : m_LayerStack)
+				layer->OnImGuiRender();
+
+			m_ImGuiLayer->EndFrame();
 
 			m_Window->Update();
 		}

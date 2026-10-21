@@ -19,6 +19,8 @@
 #include <iostream>
 #include <stdint.h>
 
+#include "imgui.h"
+
 ViewportLayer::ViewportLayer()
 	: m_Shader(Renderer::Shader("Shaders/basicTexture.vert", "Shaders/basicTexture.frag"))
 {
@@ -217,5 +219,37 @@ void ViewportLayer::OnRender()
 		m_Shader.SetMat4("model", model);
 		
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+	}
+}
+
+void ViewportLayer::OnImGuiRender()
+{
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("New Scene"))
+			{
+
+			}
+
+			if (ImGui::MenuItem("Open Scene"))
+			{
+
+			}
+
+			if (ImGui::MenuItem("Save", "Ctrl+S"))
+			{
+
+			}
+			
+			if (ImGui::MenuItem("Save As", "Ctrl+Shift+S"))
+			{
+
+			}
+
+			ImGui::EndMenu();
+		}
+		ImGui::EndMainMenuBar();
 	}
 }
