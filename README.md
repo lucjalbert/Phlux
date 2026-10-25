@@ -8,12 +8,15 @@ Phlux is a render engine learning project designed to eventually support importi
 - Input system for keyboard and mouse
 - Fly camera class with keyboard movement and mouse based Euler angles rotation
 - Ability to load .obj models with ImGui file browser
-- Simple actor and scene system
-- Outliner UI system
-- Basic GLSL shaders
+- Simple actor and scene system with selection
+- Single select outliner
+- Detail panel with actor property reflection system
+- Wireframe on shaded shader
 ## Next up
-- Basic UI to add primitives
+- Saving and loading scenes to files
 - Simple lighting
+- Click on objects to select
+- 3D guizmo
 
 # Primary Resources Used
 - https://learnopengl.com/
