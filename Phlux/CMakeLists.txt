@@ -8,6 +8,10 @@ set(SOURCES
     Source/ViewportLayer.cpp
     Source/TitleBarLayer.h
     Source/TitleBarLayer.cpp
+    Source/OutlinerLayer.h
+    Source/OutlinerLayer.cpp
+    Source/DetailPanelLayer.h
+    Source/DetailPanelLayer.cpp
     Shaders/basicTexture.vert
     Shaders/basicTexture.frag
     Shaders/colorToPosition.vert

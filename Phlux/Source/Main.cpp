@@ -2,6 +2,7 @@
 #include "ViewportLayer.h"
 #include "TitleBarLayer.h"
 #include "OutlinerLayer.h"
+#include "DetailPanelLayer.h"
 
 int main()
 {
@@ -14,5 +15,6 @@ int main()
 	application.PushLayer<ViewportLayer>();
 	application.PushLayer<TitleBarLayer>();
 	application.PushLayer<OutlinerLayer>();
+	application.PushLayer<DetailPanelLayer>();
 	application.Run();
 }

@@ -23,7 +23,11 @@ namespace Scene {
 		}
 
 		std::vector<std::unique_ptr<Actor::Actor>>& GetActors() { return m_Actors; }
+		Actor::Actor* GetActorByName(std::string);
 		uint32_t GetNumActors();
+
+		Actor::Actor* GetSelectedActor();
+		void SetSelectedActor(Actor::Actor* actor);
 
 		std::string MakeUniqueActorName(std::string name, uint32_t id = 0);
 

@@ -104,9 +104,6 @@ void ViewportLayer::OnRender()
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-
 	glm::mat4 view;
 	view = m_Camera.GetViewMatrix();
 
@@ -120,12 +117,27 @@ void ViewportLayer::OnRender()
 		projection = glm::ortho(0.0f, 6.0f, 0.0f, 5.0f, -1000.0f, 10000.0f);
 	}
 
-	m_Shader.SetMat4("model", model);
 	m_Shader.SetMat4("view", view);
 	m_Shader.SetMat4("projection", projection);
 
-	for (uint32_t i = 0; i < Core::Application::Get().GetScene()->GetNumActors(); i++)
+	Scene::Scene* scene = Core::Application::Get().GetScene().get();
+	for (uint32_t i = 0; i < scene->GetNumActors(); i++)
 	{
-		Core::Application::Get().GetScene()->GetActors()[i]->Render();
+		auto& actor = scene->GetActors()[i];
+		m_Shader.SetMat4("model", scene->GetActors()[i]->GetModelMatrix());
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glEnable(GL_POLYGON_OFFSET_FILL);
+		glPolygonOffset(1.0f, 1.0f);
+		m_Shader.SetBool("bIsSelected", false);
+		m_Shader.SetBool("bIsWireframe", false);
+		actor->Render(); // Fill
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		m_Shader.SetBool("bIsWireframe", true);
+		m_Shader.SetBool("bIsSelected", actor->bSelected);
+		actor->Render(); // Wireframe
 	}
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }

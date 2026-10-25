@@ -25,4 +25,39 @@ namespace Scene {
 
 		return uniqueName;
 	}
+
+	Actor::Actor* Scene::GetActorByName(std::string name)
+	{
+		for (uint32_t i = 0; i < GetNumActors(); i++)
+		{
+			if (GetActors()[i]->GetName() == name)
+			{
+				return GetActors()[i].get();
+			}
+		}
+		return nullptr;
+	}
+
+	Actor::Actor* Scene::GetSelectedActor()
+	{
+		for (uint32_t i = 0; i < GetNumActors(); i++)
+		{
+			if (GetActors()[i]->bSelected)
+			{
+				return GetActors()[i].get();
+			}
+		}
+		return nullptr;
+	}
+
+	void Scene::SetSelectedActor(Actor::Actor* actor)
+	{
+		if (Actor::Actor* selectedActor = GetActorByName(actor->GetName()))
+		{
+			auto* oldSelectedActor = GetSelectedActor();
+			if (oldSelectedActor)
+				oldSelectedActor->bSelected = false;
+			selectedActor->bSelected = true;
+		}
+	}
 }

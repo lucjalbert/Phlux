@@ -7,7 +7,6 @@
 
 #include <memory>
 
-
 void OutlinerLayer::OnImGuiRender()
 {
 	std::shared_ptr<Scene::Scene> scene = Core::Application::Get().GetScene();
@@ -25,6 +24,7 @@ void OutlinerLayer::OnImGuiRender()
 
 		if (ImGui::Selectable(actorName.c_str(), selected == i))
 		{
+			scene->SetSelectedActor(scene->GetActors()[i].get());
 			selected = i;
 		}
 	}

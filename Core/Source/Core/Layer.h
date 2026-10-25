@@ -7,8 +7,8 @@ namespace Core
 	public:
 		virtual ~Layer() = default;
 
-		virtual void OnUpdate(float deltaTime) {};
-		virtual void OnRender() {};
-		virtual void OnImGuiRender() {};
+		virtual void OnUpdate(float deltaTime) {}
+		virtual void OnRender() {}
+		virtual void OnImGuiRender() {}
 	};
 }

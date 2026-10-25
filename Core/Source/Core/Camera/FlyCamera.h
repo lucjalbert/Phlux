@@ -4,7 +4,7 @@
 
 namespace Camera {
 
-	enum CameraDirection
+	enum class CameraDirection
 	{
 		FORWARD,
 		BACKWARD,
