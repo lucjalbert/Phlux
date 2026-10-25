@@ -27,6 +27,7 @@ namespace Core {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		//glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
 		m_Handle = glfwCreateWindow(m_Specification.Width, m_Specification.Height, m_Specification.Title.c_str(), nullptr, nullptr);
 
@@ -66,6 +67,7 @@ namespace Core {
 			glfwGetFramebufferSize(m_Handle, &width, &height);
 			return { width, height };
 		}
+		return { 0.0f, 0.0f };
 	}
 
 	bool Window::ShouldClose() const

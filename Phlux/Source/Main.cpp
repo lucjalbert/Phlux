@@ -1,5 +1,7 @@
 #include "Core/Application.h"
 #include "ViewportLayer.h"
+#include "TitleBarLayer.h"
+#include "OutlinerLayer.h"
 
 int main()
 {
@@ -10,5 +12,7 @@ int main()
 	
 	Core::Application application(appSpec);
 	application.PushLayer<ViewportLayer>();
+	application.PushLayer<TitleBarLayer>();
+	application.PushLayer<OutlinerLayer>();
 	application.Run();
 }

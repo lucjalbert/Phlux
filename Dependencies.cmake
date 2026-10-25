@@ -23,6 +23,8 @@ endif()
 find_package(OpenGL REQUIRED)
 
 # GLAD
+set(CMAKE_FOLDER "Dependencies")
+
 FetchContent_Declare(
     glad
     DOWNLOAD_EXTRACT_TIMESTAMP OFF
@@ -42,7 +44,8 @@ target_include_directories(glad PUBLIC
     "${glad_SOURCE_DIR}/include"
 )
 
-set_target_properties(glad PROPERTIES FOLDER "Dependencies")
+#set_target_properties(glad PROPERTIES FOLDER "Dependencies")
+unset(CMAKE_FOLDER)
 
 # GLM
 find_package(glm 1.0.1 QUIET)
@@ -65,7 +68,7 @@ set_target_properties(glm PROPERTIES FOLDER "Dependencies")
 FetchContent_Declare(
     imgui
     GIT_REPOSITORY https://github.com/ocornut/imgui.git
-    GIT_TAG        v1.93.0
+    GIT_TAG        docking
     GIT_SHALLOW    TRUE
 )
 
@@ -77,6 +80,7 @@ endif()
 
 set(IMGUI_CORE_SOURCES
 "${imgui_SOURCE_DIR}/imgui.cpp"
+"${imgui_SOURCE_DIR}/imgui_demo.cpp"
 "${imgui_SOURCE_DIR}/imgui_draw.cpp"
 "${imgui_SOURCE_DIR}/imgui_tables.cpp"
 "${imgui_SOURCE_DIR}/imgui_widgets.cpp"
@@ -86,3 +90,22 @@ set(IMGUI_BACKEND_SOURCES
     "${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp"
     "${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp"
 )
+
+# Assimp
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+
+set(CMAKE_FOLDER "Dependencies")
+
+FetchContent_Declare(
+    assimp
+    GIT_REPOSITORY https://github.com/assimp/assimp.git
+    GIT_TAG        v6.0.5
+    GIT_SHALLOW    TRUE
+)
+
+FetchContent_MakeAvailable(assimp)
+
+unset(CMAKE_FOLDER)

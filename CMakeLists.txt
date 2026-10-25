@@ -12,4 +12,7 @@ include(Dependencies.cmake)
 
 # Projects
 add_subdirectory(Core)
-add_subdirectory(App)
+add_subdirectory(Phlux)
+
+# Set startup project
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Phlux)

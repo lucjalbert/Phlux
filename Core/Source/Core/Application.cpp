@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "Layer.h"
 #include "Input/Input.h"
+#include "Scene/Scene.h"
 
 #include <GLFW/glfw3.h>
 
@@ -35,6 +36,8 @@ namespace Core {
 
 		m_Window = std::make_shared<Window>(m_Specification.WindowSpec);
 		m_Window->Create();
+
+		m_Scene = std::make_shared<Scene::Scene>(Scene::Scene());
 
 		m_Input = std::make_shared<Input::Input>();
 		m_Input->Init(m_Window->GetHandle());

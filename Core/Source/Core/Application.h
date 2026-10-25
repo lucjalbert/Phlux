@@ -4,6 +4,7 @@
 #include "Layer.h"
 #include "Input/Input.h"
 #include "ImGui/ImGuiLayer.h"
+#include "Scene/Scene.h"
 
 #include <glm/glm.hpp>
 
@@ -36,6 +37,7 @@ namespace Core {
 
 		std::shared_ptr<Window> GetWindow() const { return m_Window; }
 		std::shared_ptr<Input::Input> GetInputManager() const { return m_Input; }
+		std::shared_ptr<Scene::Scene> GetScene() const { return m_Scene; }
 
 		static Application& Get();
 		static float GetTime();
@@ -50,5 +52,7 @@ namespace Core {
 		std::unique_ptr<UI::ImGuiLayer> m_ImGuiLayer;
 
 		std::shared_ptr<Input::Input> m_Input;
+
+		std::shared_ptr<Scene::Scene> m_Scene;
 	};
 }
