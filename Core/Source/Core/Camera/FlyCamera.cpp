@@ -1,5 +1,7 @@
 #include "FlyCamera.h"
 
+#include "Core/Application.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -17,7 +19,8 @@ namespace Camera {
 
 	glm::mat4 FlyCamera::GetProjectionMatrix()
 	{
-		return glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 10000.0f);
+		glm::vec2 frameBufferSize = Core::Application::Get().GetFramebufferSize();
+		return glm::perspective(glm::radians(45.0f), frameBufferSize.x / frameBufferSize.y, 0.1f, 10000.0f);
 	}
 
 	void FlyCamera::UpdateCameraPosition(CameraDirection direction, float deltaTime)
