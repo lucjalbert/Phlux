@@ -21,6 +21,9 @@ namespace Input {
 		bool IsMouseButtonPressed(int button);
 		bool IsMouseButtonReleased(int button);
 
+		float GetMousePosX() const { return m_MousePosX; }
+		float GetMousePosY() const { return m_MousePoxY; }
+
 		float GetMouseDeltaPosX() const { return m_MouseDeltaPosX; }
 		float GetMouseDeltaPosY() const { return m_MouseDeltaPosY; }
 
@@ -41,6 +44,9 @@ namespace Input {
 
 		float m_LastCameraPosX = 0.0f;
 		float m_LastCameraPosY = 0.0f;
+
+		float m_MousePosX = 0.0f;
+		float m_MousePoxY = 0.0f;
 
 		float m_MouseDeltaPosX = 0.0f;
 		float m_MouseDeltaPosY = 0.0f;

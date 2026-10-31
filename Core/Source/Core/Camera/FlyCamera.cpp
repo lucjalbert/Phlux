@@ -15,6 +15,11 @@ namespace Camera {
 		return glm::lookAt(m_FlyCameraSpec.CameraPos,m_FlyCameraSpec.CameraPos + m_FlyCameraSpec.CameraFront, m_FlyCameraSpec.CameraUp);
 	}
 
+	glm::mat4 FlyCamera::GetProjectionMatrix()
+	{
+		return glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 10000.0f);
+	}
+
 	void FlyCamera::UpdateCameraPosition(CameraDirection direction, float deltaTime)
 	{
 		float cameraSpeed = m_FlyCameraSpec.BaseCameraSpeed * deltaTime;

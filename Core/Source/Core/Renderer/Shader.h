@@ -29,6 +29,7 @@ namespace Renderer {
 		void SetBool(const std::string& name, bool value) const;
 		void SetInt(const std::string& name, int value) const;
 		void SetFloat(const std::string& name, float value) const;
+		void SetVec4(const std::string& name, glm::vec4 value) const;
 		void SetMat4(const std::string& name, glm::mat4 mat) const;
 		void SetTexture(const std::string& name, uint32_t index, GLenum textureUnit) const;
 

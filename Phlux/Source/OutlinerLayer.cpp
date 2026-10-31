@@ -22,6 +22,15 @@ void OutlinerLayer::OnImGuiRender()
 			actorName = "Object";
 		}
 
+		if (scene->GetActors()[i]->bSelected)
+		{
+			selected = i;
+		}
+		else
+		{
+			selected = -1;
+		}
+
 		if (ImGui::Selectable(actorName.c_str(), selected == i))
 		{
 			scene->SetSelectedActor(scene->GetActors()[i].get());

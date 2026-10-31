@@ -14,6 +14,7 @@ namespace Actor {
 
 		virtual void Render() override;
 
+		const Renderer::Model& GetModel() const { return m_Model; }
 	private:
 		Renderer::Model m_Model;
 	};

@@ -1,5 +1,7 @@
 #include "Input.h"
 
+#include <imgui.h>
+
 #include <print>
 #include <algorithm>
 
@@ -78,6 +80,9 @@ namespace Input {
 
 	void Input::OnMouseButton(int button, int action)
 	{
+		if (ImGui::GetIO().WantCaptureMouse)
+			return;
+
 		if (action == GLFW_PRESS)
 		{
 			m_ButtonsDown.insert(button);
@@ -107,12 +112,12 @@ namespace Input {
 
 	void Input::OnCursorMoved(double xposIn, double yposIn)
 	{
-		float xpos = static_cast<float>(xposIn);
-		float ypos = static_cast<float>(yposIn);
+		m_MousePosX = static_cast<float>(xposIn);
+		m_MousePoxY = static_cast<float>(yposIn);
 
-		m_MouseDeltaPosX = xpos - m_LastCameraPosX;
-		m_MouseDeltaPosY = ypos - m_LastCameraPosY;
-		m_LastCameraPosX = xpos;
-		m_LastCameraPosY = ypos;
+		m_MouseDeltaPosX = m_MousePosX - m_LastCameraPosX;
+		m_MouseDeltaPosY = m_MousePoxY - m_LastCameraPosY;
+		m_LastCameraPosX = m_MousePosX;
+		m_LastCameraPosY = m_MousePoxY;
 	}
 }

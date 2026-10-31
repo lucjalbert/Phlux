@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Actors/Actor.h"
+#include "Core/Camera/FlyCamera.h"
 
 #include <string>
 #include <vector>
@@ -11,9 +12,7 @@ namespace Scene {
 	class Scene
 	{
 	public:
-		//void Initialize();
-		//void Shutdown();
-		//bool Open();
+		Scene();
 
 		template<typename TActor, typename... Args>
 		requires(std::is_base_of_v<Actor::Actor, TActor>)
@@ -28,12 +27,15 @@ namespace Scene {
 
 		Actor::Actor* GetSelectedActor();
 		void SetSelectedActor(Actor::Actor* actor);
+		void DeselectActor();
+
+		void SelectActorAtMouseLocation(float mousePosX, float mousePosY);
 
 		std::string MakeUniqueActorName(std::string name, uint32_t id = 0);
 
+		std::shared_ptr<Camera::FlyCamera> GetCamera() const { return m_Camera; }
 	private:
-		std::string m_SourceFile;
-
 		std::vector<std::unique_ptr<Actor::Actor>> m_Actors;
+		std::shared_ptr<Camera::FlyCamera> m_Camera;
 	};
 }

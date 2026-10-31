@@ -30,6 +30,7 @@ namespace Camera {
 		FlyCamera(FlyCameraSpecification flyCameraSpec = FlyCameraSpecification());
 
 		glm::mat4 GetViewMatrix();
+		glm::mat4 GetProjectionMatrix();
 
 		void UpdateCameraPosition(CameraDirection direction, float deltaTime);
 		void UpdateCameraRotation(float deltaPosX, float deltaPosY, bool constrainPitch = true);

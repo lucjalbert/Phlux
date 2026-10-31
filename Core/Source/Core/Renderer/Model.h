@@ -18,7 +18,8 @@ namespace Renderer {
 		}
 		void Draw();
 
-		std::string GetName() { return m_Name; }
+		const std::string GetName() const { return m_Name; }
+		const std::vector<Mesh>& GetMeshes() const { return m_Meshes; }
 	
 	private:
 		std::vector<Mesh> m_Meshes;

@@ -8,6 +8,7 @@
 #include "Core/Input/Input.h"
 #include "Core/Camera/FlyCamera.h"
 #include "Core/Scene/Actors/Actor.h"
+#include "Core/Scene/Actors/ModelActor.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -30,14 +31,20 @@ ViewportLayer::ViewportLayer()
 {
 	std::println("Initializing Viewport Layer");
 
-	// Initialize camera
-	Camera::FlyCameraSpecification flyCameraSpec;
-	m_Camera = Camera::FlyCamera(flyCameraSpec);
+	m_InputManager = Core::Application::Get().GetInputManager().get();
+	m_Scene = Core::Application::Get().GetScene().get();
+	m_Camera = m_Scene->GetCamera().get();
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_DEPTH_TEST);
 
 	m_Shader.Use();
+
+	// Temp auto-import model
+	Renderer::Model model = Renderer::Model("D:\\_LUC\\__MYPROJECTS\\Phlux\\Content\\Meshes\\backpack.obj");
+
+	Actor::ModelActor modelActor = Actor::ModelActor(model);
+	Core::Application::Get().GetScene()->AddActor<Actor::ModelActor>(std::move(model));
 }
 
 ViewportLayer::~ViewportLayer()
@@ -49,50 +56,60 @@ ViewportLayer::~ViewportLayer()
 
 void ViewportLayer::OnUpdate(float deltaTime)
 {
-	if (Core::Application::Get().GetInputManager()->IsKeyPressed(GLFW_KEY_SPACE))
+	if (m_InputManager->IsKeyPressed(GLFW_KEY_SPACE))
 	{
-		glPolygonMode(
-			GL_FRONT_AND_BACK, 
-			m_WireframeMode ? GL_FILL : GL_LINE
-		);
+		glPolygonMode(GL_FRONT_AND_BACK, m_WireframeMode ? GL_FILL : GL_LINE);
 		m_WireframeMode = !m_WireframeMode;
 	}
 
-	if (Core::Application::Get().GetInputManager()->IsKeyPressed(GLFW_KEY_TAB))
+	if (m_InputManager->IsKeyPressed(GLFW_KEY_TAB))
 	{
-		m_PerspectiveMode = !m_PerspectiveMode;
+		m_WireOnShadedMode = !m_WireOnShadedMode;
 	}
 
 	// Handle camera cursor permissions
-	if (Core::Application::Get().GetInputManager()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_2))
+	if (m_InputManager->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_2))
 	{
 		m_CameraMode = true;
 		glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
-	if (Core::Application::Get().GetInputManager()->IsMouseButtonReleased(GLFW_MOUSE_BUTTON_2))
+	if (m_InputManager->IsMouseButtonReleased(GLFW_MOUSE_BUTTON_2))
 	{
 		m_CameraMode = false;
 		glfwSetInputMode(Core::Application::Get().GetWindow()->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	}
 
+	if (m_InputManager->IsMouseButtonReleased(GLFW_MOUSE_BUTTON_1))
+	{
+		float mousePosX = Core::Application::Get().GetInputManager()->GetMousePosX();
+		float mousePosY = Core::Application::Get().GetInputManager()->GetMousePosY();
+
+		m_Scene->SelectActorAtMouseLocation(mousePosX, mousePosY);
+	}
+	
 	if (m_CameraMode)
 	{
 		// Camera direction
-		m_Camera.UpdateCameraRotation(Core::Application::Get().GetInputManager()->GetMouseDeltaPosX(), Core::Application::Get().GetInputManager()->GetMouseDeltaPosY());
+		m_Camera->UpdateCameraRotation(m_InputManager->GetMouseDeltaPosX(), m_InputManager->GetMouseDeltaPosY());
 
 		// Camera position
-		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_W))
-			m_Camera.UpdateCameraPosition(Camera::CameraDirection::FORWARD, deltaTime);
-		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_S))
-			m_Camera.UpdateCameraPosition(Camera::CameraDirection::BACKWARD, deltaTime);
-		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_D))
-			m_Camera.UpdateCameraPosition(Camera::CameraDirection::RIGHT, deltaTime);
-		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_A))
-			m_Camera.UpdateCameraPosition(Camera::CameraDirection::LEFT, deltaTime);
-		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_E))
-			m_Camera.UpdateCameraPosition(Camera::CameraDirection::UP, deltaTime);
-		if (Core::Application::Get().GetInputManager()->IsKeyDown(GLFW_KEY_Q))
-			m_Camera.UpdateCameraPosition(Camera::CameraDirection::DOWN, deltaTime);
+		if (m_InputManager->IsKeyDown(GLFW_KEY_W))
+			m_Camera->UpdateCameraPosition(Camera::CameraDirection::FORWARD, deltaTime);
+
+		if (m_InputManager->IsKeyDown(GLFW_KEY_S))
+			m_Camera->UpdateCameraPosition(Camera::CameraDirection::BACKWARD, deltaTime);
+
+		if (m_InputManager->IsKeyDown(GLFW_KEY_D))
+			m_Camera->UpdateCameraPosition(Camera::CameraDirection::RIGHT, deltaTime);
+
+		if (m_InputManager->IsKeyDown(GLFW_KEY_A))
+			m_Camera->UpdateCameraPosition(Camera::CameraDirection::LEFT, deltaTime);
+
+		if (m_InputManager->IsKeyDown(GLFW_KEY_E))
+			m_Camera->UpdateCameraPosition(Camera::CameraDirection::UP, deltaTime);
+
+		if (m_InputManager->IsKeyDown(GLFW_KEY_Q))
+			m_Camera->UpdateCameraPosition(Camera::CameraDirection::DOWN, deltaTime);
 	}
 }
 
@@ -105,27 +122,21 @@ void ViewportLayer::OnRender()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 view;
-	view = m_Camera.GetViewMatrix();
+	view = m_Camera->GetViewMatrix();
 
 	glm::mat4 projection;
-	if (m_PerspectiveMode)
-	{
-		projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 10000.0f);
-	}
-	else
-	{
-		projection = glm::ortho(0.0f, 6.0f, 0.0f, 5.0f, -1000.0f, 10000.0f);
-	}
+	projection = m_Camera->GetProjectionMatrix();
 
+	m_Shader.Use();
 	m_Shader.SetMat4("view", view);
 	m_Shader.SetMat4("projection", projection);
 
-	Scene::Scene* scene = Core::Application::Get().GetScene().get();
-	for (uint32_t i = 0; i < scene->GetNumActors(); i++)
+	for (uint32_t i = 0; i < m_Scene->GetNumActors(); i++)
 	{
-		auto& actor = scene->GetActors()[i];
-		m_Shader.SetMat4("model", scene->GetActors()[i]->GetModelMatrix());
+		auto& actor = m_Scene->GetActors()[i];
+		m_Shader.SetMat4("model", m_Scene->GetActors()[i]->GetModelMatrix());
 
+		m_Shader.Use();
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glEnable(GL_POLYGON_OFFSET_FILL);
 		glPolygonOffset(1.0f, 1.0f);
@@ -133,11 +144,12 @@ void ViewportLayer::OnRender()
 		m_Shader.SetBool("bIsWireframe", false);
 		actor->Render(); // Fill
 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		m_Shader.SetBool("bIsWireframe", true);
-		m_Shader.SetBool("bIsSelected", actor->bSelected);
-		actor->Render(); // Wireframe
+		if (m_WireOnShadedMode || actor->bSelected)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			m_Shader.SetBool("bIsWireframe", true);
+			m_Shader.SetBool("bIsSelected", actor->bSelected);
+			actor->Render(); // Wireframe
+		}
 	}
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }

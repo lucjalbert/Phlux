@@ -38,6 +38,9 @@ set(SOURCES
     Source/Core/Scene/Actors/Actor.cpp
     Source/Core/Scene/Actors/ModelActor.h
     Source/Core/Scene/Actors/ModelActor.cpp
+
+    Source/Core/Utils/RayCast.h
+    Source/Core/Utils/RayCast.cpp
 )
 
 add_library(Core STATIC)

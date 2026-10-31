@@ -4,6 +4,8 @@
 #include "Core/Renderer/Shader.h"
 #include "Core/Renderer/Model.h"
 #include "Core/Camera/FlyCamera.h"
+#include "Core/Scene/Scene.h"
+#include "Core/Input/Input.h"
 
 #include <glm/glm.hpp>
 
@@ -25,8 +27,10 @@ private:
 	Renderer::Shader m_Shader;
 
 	bool m_WireframeMode = false;
-	bool m_PerspectiveMode = true;
-
+	bool m_WireOnShadedMode = true;
 	bool m_CameraMode = false;
-	Camera::FlyCamera m_Camera;
+
+	Input::Input* m_InputManager;
+	Scene::Scene* m_Scene;
+	Camera::FlyCamera* m_Camera;
 };

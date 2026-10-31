@@ -12,11 +12,11 @@ Phlux is a render engine learning project designed to eventually support importi
 - Single select outliner
 - Detail panel with actor property reflection system
 - Wireframe on shaded shader
+- Click on screen to select using Möller-Trumbore triangle intersection
 ## Next up
 - Saving and loading scenes to files
 - Simple lighting
-- Click on objects to select
-- 3D guizmo
+- 3D gizmo
 
 # Primary Resources Used
 - https://learnopengl.com/

@@ -122,6 +122,10 @@ namespace Renderer {
 	{
 		glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);
 	}
+	void Shader::SetVec4(const std::string& name, glm::vec4 value) const
+	{
+		glUniform4f(glGetUniformLocation(m_ID, name.c_str()), value.x, value.y, value.z, value.w);
+	}
 	void Shader::SetMat4(const std::string& name, glm::mat4 mat) const
 	{
 		glUniformMatrix4fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
