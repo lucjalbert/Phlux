@@ -6,6 +6,9 @@ set(SOURCES
     Vendor/stb/stb_image.h
     Vendor/stb/stb_image.cpp
     Vendor/imfilebrowser/imfilebrowser.h
+    Vendor/nlohmann/json.hpp
+    Vendor/imguizmo/ImGuizmo.h
+    Vendor/imguizmo/ImGuizmo.cpp
 
     Source/Core/Application.h
     Source/Core/Application.cpp
@@ -22,6 +25,8 @@ set(SOURCES
     Source/Core/Renderer/Mesh.cpp
     Source/Core/Renderer/Model.h
     Source/Core/Renderer/Model.cpp
+    Source/Core/Renderer/ModelSerialization.h
+    Source/Core/Renderer/ModelSerialization.cpp
 
     Source/Core/Input/Input.h
     Source/Core/Input/Input.cpp
@@ -31,6 +36,7 @@ set(SOURCES
 
     Source/Core/ImGui/ImGuiLayer.h
     Source/Core/ImGui/ImGuiLayer.cpp
+    Source/Core/ImGui/ImGuiTheme.h
 
     Source/Core/Scene/Scene.h
     Source/Core/Scene/Scene.cpp
@@ -41,6 +47,7 @@ set(SOURCES
 
     Source/Core/Utils/RayCast.h
     Source/Core/Utils/RayCast.cpp
+    Source/Core/Utils/JsonUtils.h
 )
 
 add_library(Core STATIC)
@@ -64,4 +71,4 @@ target_link_libraries(Core
         OpenGL::GL
 )
 
-target_include_directories(Core PUBLIC "Source" "vendor/stb" "Vendor/imfilebrowser" "${imgui_SOURCE_DIR}" "${assimp_SOURCE_DIR}" PRIVATE "${imgui_SOURCE_DIR}/backends")
+target_include_directories(Core PUBLIC "Source" "vendor/stb" "Vendor/imfilebrowser" "Vendor/nlohmann" "Vendor/imguizmo" "${imgui_SOURCE_DIR}" "${assimp_SOURCE_DIR}" PRIVATE "${imgui_SOURCE_DIR}/backends")

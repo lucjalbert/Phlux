@@ -8,6 +8,7 @@
 
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
+#include <ImGuizmo.h>
 
 #include <string>
 
@@ -15,11 +16,11 @@ void DetailPanelLayer::OnImGuiRender()
 {
 	ImGui::Begin("Detail Panel");
 
-	if (Core::Application::Get().GetScene()->GetNumActors() > 0)
+	if (Core::Application::Get().GetScene().GetNumActors() > 0)
 	{
 		Actor::PropertyList propertyList;
 
-		Actor::Actor* selectedActor = Core::Application::Get().GetScene()->GetSelectedActor();
+		Actor::Actor* selectedActor = Core::Application::Get().GetScene().GetSelectedActor();
 		if (selectedActor)
 		{
 			selectedActor->GetProperties(propertyList);
@@ -50,6 +51,14 @@ void DetailPanelLayer::OnImGuiRender()
 					break;
 				case Actor::PropertyType::VEC4:
 					ImGui::DragFloat4(property.Name.c_str(), glm::value_ptr(*static_cast<glm::vec4*>(property.Value)), m_SliderSpeed);
+					break;
+				case Actor::PropertyType::MAT4:
+					float position[3], rotation[3], scale[3];
+					ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(*static_cast<glm::mat4*>(property.Value)), position, rotation, scale);
+					ImGui::DragFloat3("Position", position, m_SliderSpeed);
+					ImGui::DragFloat3("Rotation", rotation, m_SliderSpeed); 
+					ImGui::DragFloat3("Scale", scale, m_SliderSpeed);
+					ImGuizmo::RecomposeMatrixFromComponents(position, rotation, scale, glm::value_ptr(*static_cast<glm::mat4*>(property.Value)));
 					break;
 				default:
 					break;

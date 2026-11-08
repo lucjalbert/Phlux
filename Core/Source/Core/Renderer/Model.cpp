@@ -8,18 +8,27 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <json.hpp>
+
 #include <string>
 #include <iostream>
 #include <vector>
 #include <filesystem>
+#include <iostream>
 
 namespace Renderer {
+
+	Model::Model(std::string name, std::vector<std::unique_ptr<Mesh>> meshes)
+		: m_Name(std::move(name)), m_Meshes(std::move(meshes))
+	{
+		std::cout << "Attempted to load model from stored meshes" << std::endl;
+	}
 
 	void Model::Draw()
 	{
 		for (uint32_t i = 0; i < m_Meshes.size(); i++)
 		{
-			m_Meshes[i].Draw();
+			m_Meshes[i]->Draw();
 		}
 	}
 
@@ -47,7 +56,7 @@ namespace Renderer {
 		for (uint32_t i = 0; i < node->mNumMeshes; i++)
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-			m_Meshes.push_back(ProcessMesh(mesh, scene));
+			m_Meshes.push_back(ProcessImportedMesh(mesh, scene));
 		}
 		
 		for (uint32_t i = 0; i < node->mNumChildren; i++)
@@ -56,7 +65,7 @@ namespace Renderer {
 		}
 	}
 
-	Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+	std::unique_ptr<Mesh> Model::ProcessImportedMesh(aiMesh* mesh, const aiScene* scene)
 	{
 		std::vector<Vertex> vertices;
 		std::vector<uint32_t> indices;
@@ -93,6 +102,11 @@ namespace Renderer {
 			}
 		}
 
-		return Mesh(vertices, indices);
+		return std::make_unique<Mesh>(std::move(vertices), std::move(indices));
+	}
+
+	std::unique_ptr<Mesh> Model::ProcessLoadedMesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices)
+	{
+		return std::make_unique<Mesh>(std::move(vertices), std::move(indices));
 	}
 }

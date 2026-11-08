@@ -9,20 +9,20 @@
 
 void OutlinerLayer::OnImGuiRender()
 {
-	std::shared_ptr<Scene::Scene> scene = Core::Application::Get().GetScene();
+	Scene::Scene& scene = Core::Application::Get().GetScene();
 	
 	ImGui::Begin("Outliner");
 
 	static int selected = -1;
-	for (uint32_t i = 0; i < scene->GetNumActors(); i++)
+	for (uint32_t i = 0; i < scene.GetNumActors(); i++)
 	{
-		std::string actorName = scene->GetActors()[i]->GetName();
+		std::string actorName = scene.GetActors()[i]->GetName();
 		if (actorName.empty())
 		{
 			actorName = "Object";
 		}
 
-		if (scene->GetActors()[i]->bSelected)
+		if (scene.GetActors()[i]->bSelected)
 		{
 			selected = i;
 		}
@@ -33,7 +33,7 @@ void OutlinerLayer::OnImGuiRender()
 
 		if (ImGui::Selectable(actorName.c_str(), selected == i))
 		{
-			scene->SetSelectedActor(scene->GetActors()[i].get());
+			scene.SetSelectedActor(scene.GetActors()[i].get());
 			selected = i;
 		}
 	}

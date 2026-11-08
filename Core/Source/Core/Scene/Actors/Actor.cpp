@@ -1,38 +1,39 @@
 #include "Actor.h"
 
 #include "Core/Application.h"
+#include "Core/Utils/JsonUtils.h"
+#include "Core/Scene/Actors/ModelActor.h"
+#include "Core/Renderer/ModelSerialization.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#include <json.hpp>
 
 namespace Actor {
 
 	Actor::Actor(std::string name)
 		: m_Name(name)
 	{
-		m_Name = Core::Application::Get().GetScene()->MakeUniqueActorName(m_Name);
+		m_Name = Core::Application::Get().GetScene().MakeUniqueActorName(m_Name);
 	}
 
 	void Actor::GetProperties(PropertyList& list)
 	{
 		list.Add("Name", m_Name, true);
-		list.Add("Position", m_Position);
-		list.Add("Rotation", m_Rotation);
-		list.Add("Scale", m_Scale);
+		list.Add("Transform", m_ModelMatrix);
 	}
 
-	glm::mat4 Actor::GetModelMatrix() const
+	void Actor::Serialize(nlohmann::json& j) const
 	{
-		glm::mat4 model = glm::mat4(1.0f);
+		j[JsonKeys::ActorType] = GetTypeName();
+		j[JsonKeys::ActorName] = m_Name;
+		j[JsonKeys::ActorTransform] = m_ModelMatrix;
+	}
 
-		model = glm::translate(model, m_Position);
-
-		model = glm::rotate(model, glm::radians(m_Rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::rotate(model, glm::radians(m_Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::rotate(model, glm::radians(m_Rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-
-		model = glm::scale(model, m_Scale);
-
-		return model;
+	void Actor::Deserialize(const nlohmann::json& j)
+	{
+		m_Name = j.at(JsonKeys::ActorName).get<std::string>();
+		m_ModelMatrix = j.at(JsonKeys::ActorTransform).get<glm::mat4>();
 	}
 }

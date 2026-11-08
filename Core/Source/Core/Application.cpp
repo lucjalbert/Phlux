@@ -34,12 +34,12 @@ namespace Core {
 			m_Specification.WindowSpec.Title = m_Specification.Name;
 		}
 
-		m_Window = std::make_shared<Window>(m_Specification.WindowSpec);
+		m_Window = std::make_unique<Window>(m_Specification.WindowSpec);
 		m_Window->Create();
 
-		m_Scene = std::make_shared<Scene::Scene>(Scene::Scene());
+		m_Scene = std::make_unique<Scene::Scene>(Scene::Scene());
 
-		m_Input = std::make_shared<Input::Input>();
+		m_Input = std::make_unique<Input::Input>();
 		m_Input->Init(m_Window->GetHandle());
 
 		m_ImGuiLayer = std::make_unique<UI::ImGuiLayer>();

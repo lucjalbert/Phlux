@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include <json_fwd.hpp>
+
 #include <string>
 #include <vector>
 
@@ -15,7 +17,8 @@ namespace Actor {
 		FLOAT,
 		VEC2,
 		VEC3,
-		VEC4
+		VEC4,
+		MAT4
 	};
 
 	struct Property
@@ -36,6 +39,7 @@ namespace Actor {
 		void Add(const std::string& name, glm::vec2& value, bool readOnly = false)		{ m_Properties.push_back(Property(name, PropertyType::VEC2, &value, readOnly)); }
 		void Add(const std::string& name, glm::vec3& value, bool readOnly = false)		{ m_Properties.push_back(Property(name, PropertyType::VEC3, &value, readOnly)); }
 		void Add(const std::string& name, glm::vec4& value, bool readOnly = false)		{ m_Properties.push_back(Property(name, PropertyType::VEC4, &value, readOnly)); }
+		void Add(const std::string& name, glm::mat4& value, bool readOnly = false)		{ m_Properties.push_back(Property(name, PropertyType::MAT4, &value, readOnly)); }
 
 		const std::vector<Property>& All() const { return m_Properties; }
 	private:
@@ -52,7 +56,12 @@ namespace Actor {
 		virtual std::string GetName() { return m_Name; }
 		virtual void GetProperties(PropertyList& list);
 
-		glm::mat4 GetModelMatrix() const;
+		virtual const std::string GetTypeName() const { return "Actor"; }
+		virtual void Serialize(nlohmann::json& j) const;
+		virtual void Deserialize(const nlohmann::json& j);
+
+		glm::mat4& GetModelMatrix() { return m_ModelMatrix; };
+		const glm::mat4& GetModelMatrix() const { return m_ModelMatrix; }
 
 		bool bSelected = false;
 
@@ -60,11 +69,17 @@ namespace Actor {
 		{
 			return this->m_Name == other.m_Name;
 		}
+
 	protected:
 		std::string m_Name;
 
-		glm::vec3 m_Position = glm::vec3(0.0f, 0.0f, 0.0f);
-		glm::vec3 m_Rotation = glm::vec3(0.0f, 0.0f, 0.0f);
-		glm::vec3 m_Scale = glm::vec3(1.0f, 1.0f, 1.0f);
+		//glm::vec3 m_Position = glm::vec3(0.0f, 0.0f, 0.0f);
+		//glm::vec3 m_Rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+		//glm::vec3 m_Scale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+		glm::mat4 m_ModelMatrix = glm::mat4(1.0f);
+
+	private:
+		int id{};
 	};
 }

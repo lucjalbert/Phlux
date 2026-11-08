@@ -6,6 +6,10 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include "ImGuiTheme.h"
+
+#include <ImGuizmo.h>
+
 namespace UI {
 
 	void ImGuiLayer::Initialize(GLFWwindow* window)
@@ -17,6 +21,8 @@ namespace UI {
 
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init();
+
+		igThemeV3(0, 0, 0);
 	}
 
 	void ImGuiLayer::Shutdown()
@@ -32,6 +38,7 @@ namespace UI {
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 		ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+		ImGuizmo::BeginFrame();
 	}
 
 	void ImGuiLayer::EndFrame()

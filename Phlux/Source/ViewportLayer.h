@@ -11,6 +11,7 @@
 
 #include <imgui.h>
 #include <imfilebrowser.h>
+#include <ImGuizmo.h>
 
 #include <stdint.h>
 #include <vector>
@@ -23,6 +24,7 @@ public:
 
 	virtual void OnUpdate(float deltaTime) override;
 	virtual void OnRender() override;
+	virtual void OnImGuiRender() override;
 private:
 	Renderer::Shader m_Shader;
 
@@ -30,7 +32,10 @@ private:
 	bool m_WireOnShadedMode = true;
 	bool m_CameraMode = false;
 
-	Input::Input* m_InputManager;
-	Scene::Scene* m_Scene;
-	Camera::FlyCamera* m_Camera;
+	Input::Input& m_InputManager;
+	Scene::Scene& m_Scene;
+	Camera::FlyCamera& m_Camera;
+
+	bool m_Enable3DGuizmo = false;
+	ImGuizmo::OPERATION m_GuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 };

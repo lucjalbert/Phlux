@@ -4,22 +4,99 @@
 #include "Actors/Actor.h"
 #include "Actors/ModelActor.h"
 #include "Core/Utils/RayCast.h"
+#include "Core/Utils/JsonUtils.h"
 #include "Core/Camera/FlyCamera.h"
 #include "Core/Renderer/Model.h"
 #include "Core/Renderer/Mesh.h"
+#include "Core/Renderer/ModelSerialization.h"
 
 #include <glm/glm.hpp>
+
+#include <json.hpp>
 
 #include <string>
 #include <format>
 #include <limits>
+#include <iostream>
+#include <fstream>
 
 namespace Scene {
 
 	Scene::Scene()
 	{
 		Camera::FlyCameraSpecification flyCameraSpec;
-		m_Camera = std::make_shared<Camera::FlyCamera>(Camera::FlyCamera(flyCameraSpec));
+		m_Camera = Camera::FlyCamera(flyCameraSpec);
+	}
+
+	bool Scene::Save(std::string destinationPath)
+	{
+		nlohmann::json j;
+		j[JsonKeys::Version] = 1.0;
+		
+		for (const auto& actor : m_Actors)
+		{
+			nlohmann::json actorJson;
+			actor->Serialize(actorJson);
+			j[JsonKeys::Actors].push_back(std::move(actorJson));
+		}
+
+		std::string scenePath = destinationPath;
+		if (!scenePath.ends_with(".json"))
+		{
+			scenePath.append(".json");
+		}
+
+		std::cout << "Saving Scene at path: " << scenePath << std::endl;
+		std::ofstream jsonFile(scenePath, std::ios::binary);
+		if (!jsonFile) return false;
+		
+		nlohmann::json::to_msgpack(j, jsonFile);
+		return static_cast<bool>(jsonFile);
+	}
+
+	bool Scene::Load(std::filesystem::path source)
+	{
+		std::ifstream jsonScene(source, std::ios::binary);
+		if (!jsonScene) return false;
+
+		try
+		{
+			nlohmann::json j = nlohmann::json::from_msgpack(jsonScene);
+
+			std::vector<std::unique_ptr<Actor::Actor>> loaded;
+			for (const auto& actorJson : j.at(JsonKeys::Actors))
+			{
+				loaded.push_back(LoadActorFromJson(actorJson));
+			}
+			m_Actors = std::move(loaded);
+		}
+		catch (const std::exception& e)
+		{
+			std::cerr << "Failed to load scene: " << e.what() << '\n';
+			return false;
+		}
+		return true;
+	}
+
+	bool Scene::Close()
+	{
+		for (const auto& actor : m_Actors)
+		{
+			DeleteActor(actor.get());
+		}
+		return false;
+	}
+
+	std::unique_ptr<Actor::Actor> Scene::LoadActorFromJson(const nlohmann::json& j)
+	{
+		std::string type = j.at(JsonKeys::ActorType).get<std::string>();
+		if (type == "ModelActor")
+		{
+			auto actor = std::make_unique<Actor::ModelActor>(ModelFromJson(j.at(JsonKeys::ModelData)));
+			actor->Deserialize(j);
+			return actor;
+		}
+		throw std::runtime_error("Unknown actor type: " + type);
 	}
 
 	uint32_t Scene::GetNumActors()
@@ -88,7 +165,7 @@ namespace Scene {
 	{
 		glm::vec2 windowSize = Core::Application::Get().GetFramebufferSize();
 
-		Utils::Ray worldSpaceRay = Utils::GenerateRayFromMousePos(mousePosX, mousePosY, windowSize.x, windowSize.y, m_Camera->GetViewMatrix(), m_Camera->GetProjectionMatrix());
+		Utils::Ray worldSpaceRay = Utils::GenerateRayFromMousePos(mousePosX, mousePosY, windowSize.x, windowSize.y, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix());
 
 		float smallestHitDistance = std::numeric_limits<float>::infinity();
 		Actor::Actor* actorToSelect = nullptr;
@@ -108,8 +185,8 @@ namespace Scene {
 			const auto& meshes = modelActor->GetModel().GetMeshes();
 			for (const auto& mesh : meshes)
 			{
-				const auto& indices = mesh.GetIndices();
-				const auto& vertices = mesh.GetVertices();
+				const auto& indices = mesh->GetIndices();
+				const auto& vertices = mesh->GetVertices();
 				for (uint32_t k = 0; k < indices.size(); k += 3)
 				{
 					float hitDistance;
@@ -133,5 +210,24 @@ namespace Scene {
 		{
 			DeselectActor();
 		}
+	}
+
+	bool Scene::DeleteActor(Actor::Actor* actor)
+	{
+		std::size_t removedCount = std::erase_if(m_Actors, [actor](const auto& ptr)
+			{
+				return ptr.get() == actor;
+			});
+		return removedCount > 0 ? true : false;
+	}
+
+	bool Scene::DeleteSelectedActor()
+	{
+		if (const auto& actor = GetSelectedActor())
+		{
+			bool result = DeleteActor(actor);
+			return result;
+		}
+		return false;
 	}
 }

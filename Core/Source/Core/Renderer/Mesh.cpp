@@ -2,12 +2,23 @@
 
 #include <glad/glad.h>
 
+#include <json.hpp>
+
+#include <iostream>
+
 namespace Renderer {
 
 	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices)
-		: m_Vertices(vertices), m_Indices(indices)
+		: m_Vertices(std::move(vertices)), m_Indices(std::move(indices))
 	{
 		SetupMesh();
+	}
+
+	Mesh::~Mesh()
+	{
+		glDeleteBuffers(1, &m_VertexBuffer);
+		glDeleteBuffers(1, &m_ElementBuffer);
+		glDeleteVertexArrays(1, &m_VertexArray);
 	}
 
 	void Mesh::SetupMesh()
@@ -42,5 +53,25 @@ namespace Renderer {
 		glBindVertexArray(m_VertexArray);
 		glDrawElements(GL_TRIANGLES, m_Indices.size(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
+	}
+
+	void to_json(nlohmann::json& j, const Vertex& v)
+	{
+		j = nlohmann::json{ {"positionX", v.Position.x}, {"positionY", v.Position.y}, {"positionZ", v.Position.z},
+							{"normalX", v.Normal.x}, {"normalY", v.Normal.y}, {"normalZ", v.Normal.z},
+							{"texCoordsX", v.TexCoords.x}, {"texCoordsY", v.TexCoords.y}
+		};
+	}
+
+	void from_json(const nlohmann::json& j, Vertex& v)
+	{
+		j.at("positionX").get_to(v.Position.x);
+		j.at("positionY").get_to(v.Position.y);
+		j.at("positionZ").get_to(v.Position.z);
+		j.at("normalX").get_to(v.Normal.x);
+		j.at("normalY").get_to(v.Normal.y);
+		j.at("normalZ").get_to(v.Normal.z);
+		j.at("texCoordsX").get_to(v.TexCoords.x);
+		j.at("texCoordsY").get_to(v.TexCoords.y);
 	}
 }

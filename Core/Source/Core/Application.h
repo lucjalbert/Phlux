@@ -35,9 +35,9 @@ namespace Core {
 			m_LayerStack.push_back(std::make_unique<TLayer>());
 		}
 
-		std::shared_ptr<Window> GetWindow() const { return m_Window; }
-		std::shared_ptr<Input::Input> GetInputManager() const { return m_Input; }
-		std::shared_ptr<Scene::Scene> GetScene() const { return m_Scene; }
+		Window& GetWindow() const { return *m_Window; }
+		Input::Input& GetInputManager() const { return *m_Input; }
+		Scene::Scene& GetScene() const { return *m_Scene; }
 
 		static Application& Get();
 		static float GetTime();
@@ -45,14 +45,14 @@ namespace Core {
 		glm::vec2 GetFramebufferSize() const;
 	private:
 		ApplicationSpecification m_Specification;
-		std::shared_ptr<Window> m_Window;
+		std::unique_ptr<Window> m_Window;
 		bool m_Running = false;
 
 		std::vector<std::unique_ptr<Layer>> m_LayerStack;
 		std::unique_ptr<UI::ImGuiLayer> m_ImGuiLayer;
 
-		std::shared_ptr<Input::Input> m_Input;
+		std::unique_ptr<Input::Input> m_Input;
 
-		std::shared_ptr<Scene::Scene> m_Scene;
+		std::unique_ptr<Scene::Scene> m_Scene;
 	};
 }
