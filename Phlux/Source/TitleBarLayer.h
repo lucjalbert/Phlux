@@ -3,8 +3,12 @@
 #include "Core/Layer.h"
 #include "Core/Scene/Scene.h"
 
+#include "GLFW/glfw3.h"
+
 #include <imgui.h>
 #include <imfilebrowser.h>
+
+#include <string>
 
 class TitleBarLayer : public Core::Layer
 {
@@ -20,6 +24,14 @@ private:
 	ImGui::FileBrowser m_LoadSceneDialog;
 
 	Scene::Scene& m_Scene;
+	GLFWwindow* m_Window;
 
 	bool m_ShowDemoWindow = false;
+
+	float m_RightSideButtonsWidth = 35.0f;
+	std::string m_CloseButtonLabel = std::string("X");
+	std::string m_MaximizeButtonLabel = std::string("[]");
+	std::string m_MinimizeButtonLabel = std::string("_");
+
+	bool m_IsWindowBeingDragged = false;
 };

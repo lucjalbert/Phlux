@@ -149,7 +149,7 @@ int igThemeV3(int hue07, int alt07, int nav07, int lit01 = 0, int compact01 = 0,
     style.Colors[ImGuiCol_Button] = ImVec4(0.10f, 0.11f, 0.14f, 1.00f);
     style.Colors[ImGuiCol_ButtonHovered] = lo;
     style.Colors[ImGuiCol_ButtonActive] = grey5;
-    style.Colors[ImGuiCol_Header] = grey3;
+    style.Colors[ImGuiCol_Header] = ImVec4(lo.x, lo.y, lo.z, 0.45f);
     style.Colors[ImGuiCol_HeaderHovered] = lo;
     style.Colors[ImGuiCol_HeaderActive] = hi;
     style.Colors[ImGuiCol_Separator] = ImVec4(0.13f, 0.15f, 0.19f, 1.00f);

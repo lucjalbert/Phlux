@@ -36,6 +36,8 @@ set(SOURCES
 
     Source/Core/ImGui/ImGuiLayer.h
     Source/Core/ImGui/ImGuiLayer.cpp
+    Source/Core/ImGui/ImGuiUtils.h
+    Source/Core/ImGui/ImGuiUtils.cpp
     Source/Core/ImGui/ImGuiTheme.h
 
     Source/Core/Scene/Scene.h

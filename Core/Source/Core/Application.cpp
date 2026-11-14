@@ -11,6 +11,7 @@
 
 #include <assert.h>
 #include <iostream>
+#include <algorithm>
 
 namespace Core {
 
@@ -103,7 +104,8 @@ namespace Core {
 
 	glm::vec2 Application::GetFramebufferSize() const
 	{
-		return m_Window->GetFramebufferSize();
+		glm::vec2 frameBufferSize = m_Window->GetFramebufferSize();
+		return glm::vec2(std::max(frameBufferSize.x, 1.0f), std::max(frameBufferSize.y, 1.0f));
 	}
 
 	float Application::GetTime()

@@ -4,8 +4,12 @@
 #include "Core/Layer.h"
 #include "Core/Renderer/Model.h"
 #include "Core/Scene/Actors/ModelActor.h"
+#include "Core/ImGui/ImGuiUtils.h"
 
 #include "GLFW/glfw3.h"
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+#include <windows.h>
 
 #include <imgui.h>
 #include <imfilebrowser.h>
@@ -14,6 +18,7 @@
 
 TitleBarLayer::TitleBarLayer()
 	: m_Scene(Core::Application::Get().GetScene()),
+	m_Window(Core::Application::Get().GetWindow().GetHandle()),
 	m_ImportObjDialog(ImGui::FileBrowser()),
 	m_SaveSceneDialog(ImGui::FileBrowser(ImGuiFileBrowserFlags_EnterNewFilename | ImGuiFileBrowserFlags_CreateNewDir)),
 	m_LoadSceneDialog(ImGui::FileBrowser())
@@ -37,8 +42,10 @@ void TitleBarLayer::OnUpdate(float deltaTime)
 
 void TitleBarLayer::OnImGuiRender()
 {
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ImGui::GetStyle().FramePadding.x, 10.0f));
 	if (ImGui::BeginMainMenuBar())
 	{
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(ImGui::GetStyle().ItemSpacing.x, 10.0f));
 		if (ImGui::BeginMenu("File"))
 		{
 			if (ImGui::MenuItem("New Scene"))
@@ -78,7 +85,73 @@ void TitleBarLayer::OnImGuiRender()
 
 			ImGui::EndMenu();
 		}
+
+		if (ImGui::BeginMenu("Edit"))
+		{
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Windows"))
+		{
+			ImGui::EndMenu();
+		}
+		ImGui::PopStyleVar();
+
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+
+		float totalButtonsWidth = m_RightSideButtonsWidth * 3;
+		float dragRegionWidth = ImGui::GetContentRegionAvail().x - totalButtonsWidth;
+
+		// Custom titlebar dragging
+		if (dragRegionWidth > 0.0f)
+		{
+			ImGui::InvisibleButton("##drag_region", ImVec2(dragRegionWidth, ImGui::GetFrameHeight()));
+
+			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+			{
+				if (glfwGetWindowAttrib(m_Window, GLFW_MAXIMIZED))
+					glfwRestoreWindow(m_Window);
+				else
+					glfwMaximizeWindow(m_Window);
+			}
+			else if (ImGui::IsItemActivated())
+			{
+				HWND hwnd = glfwGetWin32Window(m_Window);
+				ReleaseCapture();
+				SendMessage(hwnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+				ImGui::GetIO().AddMouseButtonEvent(0, false);
+			}
+		}
+
+		// Right side window management buttons
+		if (ImGui::Button(m_MinimizeButtonLabel.c_str(), ImVec2(m_RightSideButtonsWidth, 0.0f)))
+		{
+			glfwIconifyWindow(Core::Application::Get().GetWindow().GetHandle());
+		}
+
+		if (ImGui::Button(m_MaximizeButtonLabel.c_str(), ImVec2(m_RightSideButtonsWidth, 0.0f)))
+		{
+			if (glfwGetWindowAttrib(m_Window, GLFW_MAXIMIZED))
+			{
+				glfwRestoreWindow(m_Window);
+			}
+			else
+			{
+				glfwMaximizeWindow(m_Window);
+			}
+		}
+
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+		if (ImGui::Button(m_CloseButtonLabel.c_str(), ImVec2(m_RightSideButtonsWidth, 0.0f)))
+		{
+			Core::Application::Get().Stop();
+		}
+		ImGui::PopStyleColor(); // X button red color
+		ImGui::PopStyleVar(); // Remove button padding
+
 		ImGui::EndMainMenuBar();
+		ImGui::PopStyleVar(); // Title bar height override
 
 		// Save scene
 		m_SaveSceneDialog.Display();
