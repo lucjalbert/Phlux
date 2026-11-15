@@ -93,6 +93,11 @@ void TitleBarLayer::OnImGuiRender()
 
 		if (ImGui::BeginMenu("Windows"))
 		{
+			if (ImGui::MenuItem("Demo Window"))
+			{
+				m_ShowDemoWindow = true;
+			}
+
 			ImGui::EndMenu();
 		}
 		ImGui::PopStyleVar();

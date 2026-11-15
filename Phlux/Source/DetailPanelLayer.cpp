@@ -115,7 +115,7 @@ void DetailPanelLayer::SetupMaterialComboMenu(const char* menuLabel)
 		return;
 	}
 
-	selectedMaterialId = selectedModelActor->GetMaterial();
+	selectedMaterialId = selectedModelActor->GetMaterialId();
 
 	if (ImGui::BeginCombo(menuLabel, materialLibrary.Get(selectedMaterialId).GetName().c_str()))
 	{
@@ -124,7 +124,6 @@ void DetailPanelLayer::SetupMaterialComboMenu(const char* menuLabel)
 			ImGui::PushID(static_cast<int>(id.Value));
 
 			const bool isSelected = (selectedMaterialId == id);
-			
 
 			if (ImGui::Selectable(materialLibrary.Get(id).GetName().c_str(), isSelected))
 			{
@@ -138,5 +137,16 @@ void DetailPanelLayer::SetupMaterialComboMenu(const char* menuLabel)
 			ImGui::PopID();
 		}
 		ImGui::EndCombo();
+	}
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* droppedMaterialPayload = ImGui::AcceptDragDropPayload("MaterialId"))
+		{
+			selectedMaterialId = *(Renderer::MaterialId*)droppedMaterialPayload->Data;
+			selectedModelActor->SetMaterial(selectedMaterialId);
+		}
+
+		ImGui::EndDragDropTarget();
 	}
 }

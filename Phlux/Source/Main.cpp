@@ -3,6 +3,7 @@
 #include "TitleBarLayer.h"
 #include "OutlinerLayer.h"
 #include "DetailPanelLayer.h"
+#include "AssetBrowserLayer.h"
 
 int main()
 {
@@ -16,5 +17,6 @@ int main()
 	application.PushLayer<TitleBarLayer>();
 	application.PushLayer<OutlinerLayer>();
 	application.PushLayer<DetailPanelLayer>();
+	application.PushLayer<AssetBrowserLayer>();
 	application.Run();
 }

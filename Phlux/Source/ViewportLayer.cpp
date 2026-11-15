@@ -157,7 +157,7 @@ void ViewportLayer::OnRender()
 		if (!modelActor)
 			continue;
 
-		const Renderer::Material& material = m_MaterialLibrary.Get(modelActor->GetMaterial());
+		const Renderer::Material& material = m_MaterialLibrary.Get(modelActor->GetMaterialId());
 		const Renderer::Shader& shader = m_ShaderLibrary.Get(material.GetShaderId());
 		shader.Use();
 		material.ApplyParams(shader);

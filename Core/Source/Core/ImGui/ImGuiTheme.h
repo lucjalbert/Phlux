@@ -159,9 +159,9 @@ int igThemeV3(int hue07, int alt07, int nav07, int lit01 = 0, int compact01 = 0,
     style.Colors[ImGuiCol_ResizeGripHovered] = lo;
     style.Colors[ImGuiCol_ResizeGripActive] = hi;
     style.Colors[ImGuiCol_InputTextCursor] = Luma(100, 100);
-    style.Colors[ImGuiCol_TabHovered] = grey3;
+    style.Colors[ImGuiCol_TabHovered] = lo;
     style.Colors[ImGuiCol_Tab] = grey1;
-    style.Colors[ImGuiCol_TabSelected] = grey3;
+    style.Colors[ImGuiCol_TabSelected] = ImVec4(lo.x, lo.y, lo.z, 0.45f);
     style.Colors[ImGuiCol_TabSelectedOverline] = hi;
     style.Colors[ImGuiCol_TabDimmed] = grey1;
     style.Colors[ImGuiCol_TabDimmedSelected] = grey1;

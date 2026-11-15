@@ -25,7 +25,8 @@ namespace Actor {
 		virtual void GetProperties(PropertyList& list) override;
 
 		const Renderer::Model& GetModel() const { return m_Model; }
-		const Renderer::MaterialId& GetMaterial() const { return m_Material; }
+		Renderer::MaterialId GetMaterialId() { return m_Material; }
+		const Renderer::MaterialId GetMaterialId() const { return m_Material; }
 		void SetMaterial(Renderer::MaterialId id) { m_Material = id; }
 
 	private:
