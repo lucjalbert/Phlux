@@ -9,6 +9,8 @@
 #include "Core/Renderer/Model.h"
 #include "Core/Renderer/Mesh.h"
 #include "Core/Renderer/ModelSerialization.h"
+#include "Core/Renderer/MaterialLibrary.h"
+#include "Core/Renderer/ShaderLibrary.h"
 
 #include <glm/glm.hpp>
 
@@ -26,6 +28,14 @@ namespace Scene {
 	{
 		Camera::FlyCameraSpecification flyCameraSpec;
 		m_Camera = Camera::FlyCamera(flyCameraSpec);
+
+		Renderer::MaterialId redId = m_Materials.Create(Renderer::ShaderId::Unlit, "Unlit Red");
+		Renderer::Material& red = m_Materials.Get(redId);
+		red.SetVec4("aColor", glm::vec4(1.0, 0.0, 0.0, 1.0));
+
+		Renderer::MaterialId blueId = m_Materials.Create(Renderer::ShaderId::Unlit, "Unlit Blue");
+		Renderer::Material& blue = m_Materials.Get(blueId);
+		blue.SetVec4("aColor", glm::vec4(0.0, 0.0, 1.0, 1.0));
 	}
 
 	bool Scene::Save(std::string destinationPath)
@@ -101,7 +111,7 @@ namespace Scene {
 
 	uint32_t Scene::GetNumActors()
 	{
-		return m_Actors.size();
+		return static_cast<uint32_t>(m_Actors.size());
 	}
 
 	std::string Scene::MakeUniqueActorName(std::string name, uint32_t id)

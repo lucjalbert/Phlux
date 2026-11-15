@@ -4,6 +4,7 @@
 #include "Layer.h"
 #include "Input/Input.h"
 #include "Scene/Scene.h"
+#include "Renderer/ShaderLibrary.h"
 
 #include <GLFW/glfw3.h>
 
@@ -38,7 +39,9 @@ namespace Core {
 		m_Window = std::make_unique<Window>(m_Specification.WindowSpec);
 		m_Window->Create();
 
-		m_Scene = std::make_unique<Scene::Scene>(Scene::Scene());
+		m_ShaderLibrary = std::make_unique<Renderer::ShaderLibrary>();
+
+		m_Scene = std::make_unique<Scene::Scene>();
 
 		m_Input = std::make_unique<Input::Input>();
 		m_Input->Init(m_Window->GetHandle());
@@ -110,7 +113,7 @@ namespace Core {
 
 	float Application::GetTime()
 	{
-		return glfwGetTime();
+		return static_cast<float>(glfwGetTime());
 	}
 
 	Application& Application::Get()

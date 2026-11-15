@@ -3,6 +3,7 @@
 #include "Core/Layer.h"
 #include "Core/Renderer/Shader.h"
 #include "Core/Renderer/Model.h"
+#include "Core/Renderer/MaterialLibrary.h"
 #include "Core/Camera/FlyCamera.h"
 #include "Core/Scene/Scene.h"
 #include "Core/Input/Input.h"
@@ -25,9 +26,8 @@ public:
 	virtual void OnUpdate(float deltaTime) override;
 	virtual void OnRender() override;
 	virtual void OnImGuiRender() override;
-private:
-	Renderer::Shader m_Shader;
 
+private:
 	bool m_WireframeMode = false;
 	bool m_WireOnShadedMode = true;
 	bool m_CameraMode = false;
@@ -35,6 +35,8 @@ private:
 	Input::Input& m_InputManager;
 	Scene::Scene& m_Scene;
 	Camera::FlyCamera& m_Camera;
+	const Renderer::MaterialLibrary& m_MaterialLibrary;
+	const Renderer::ShaderLibrary& m_ShaderLibrary;
 
 	bool m_Enable3DGuizmo = false;
 	ImGuizmo::OPERATION m_GuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;

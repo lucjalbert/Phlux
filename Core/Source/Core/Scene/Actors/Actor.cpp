@@ -21,6 +21,7 @@ namespace Actor {
 	void Actor::GetProperties(PropertyList& list)
 	{
 		list.Add("Name", m_Name, true);
+		list.Add("Transform");
 		list.Add("Transform", m_ModelMatrix);
 	}
 

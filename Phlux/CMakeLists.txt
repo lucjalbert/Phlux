@@ -12,12 +12,11 @@ set(SOURCES
     Source/OutlinerLayer.cpp
     Source/DetailPanelLayer.h
     Source/DetailPanelLayer.cpp
-    Shaders/basicTexture.vert
-    Shaders/basicTexture.frag
-    Shaders/colorToPosition.vert
-    Shaders/colorToPosition.frag
+
     Shaders/default.vert
     Shaders/default.frag
+    Shaders/unlit.vert
+    Shaders/unlit.frag
 )
 
 add_executable(Phlux)

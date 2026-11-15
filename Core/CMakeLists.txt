@@ -19,6 +19,12 @@ set(SOURCES
 
     Source/Core/Renderer/Shader.h
     Source/Core/Renderer/Shader.cpp
+    Source/Core/Renderer/ShaderLibrary.h
+    Source/Core/Renderer/ShaderLibrary.cpp
+    Source/Core/Renderer/Material.h
+    Source/Core/Renderer/Material.cpp
+    Source/Core/Renderer/MaterialLibrary.h
+    Source/Core/Renderer/MaterialLibrary.cpp
     Source/Core/Renderer/Texture2D.h
     Source/Core/Renderer/Texture2D.cpp
     Source/Core/Renderer/Mesh.h

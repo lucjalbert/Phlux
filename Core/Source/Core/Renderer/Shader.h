@@ -22,16 +22,16 @@ namespace Renderer {
 
 		void Destroy();
 
-		void Use();
+		void Use() const;
 
 		void AddTexture(std::shared_ptr<Texture2D> texture);
 
-		void SetBool(const std::string& name, bool value) const;
-		void SetInt(const std::string& name, int value) const;
-		void SetFloat(const std::string& name, float value) const;
-		void SetVec4(const std::string& name, glm::vec4 value) const;
-		void SetMat4(const std::string& name, glm::mat4 mat) const;
-		void SetTexture(const std::string& name, uint32_t index, GLenum textureUnit) const;
+		void SetUniform(const std::string& name, bool value) const;
+		void SetUniform(const std::string& name, int value) const;
+		void SetUniform(const std::string& name, float value) const;
+		void SetUniform(const std::string& name, glm::vec4 value) const;
+		void SetUniform(const std::string& name, glm::mat4 mat) const;
+		void SetUniform(const std::string& name, uint32_t index, GLenum textureUnit) const;
 
 	private:
 		GLuint m_ID;

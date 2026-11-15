@@ -105,32 +105,32 @@ namespace Renderer {
 		glDeleteProgram(m_ID);
 	}
 
-		void Shader::Use()
+		void Shader::Use() const
 	{
 		glUseProgram(m_ID);
 	}
 
-	void Shader::SetBool(const std::string& name, bool value) const
+	void Shader::SetUniform(const std::string& name, bool value) const
 	{
 		glUniform1i(glGetUniformLocation(m_ID, name.c_str()), (int)value);
 	}
-	void Shader::SetInt(const std::string& name, int value) const
+	void Shader::SetUniform(const std::string& name, int value) const
 	{
 		glUniform1i(glGetUniformLocation(m_ID, name.c_str()), value);
 	}
-	void Shader::SetFloat(const std::string& name, float value) const
+	void Shader::SetUniform(const std::string& name, float value) const
 	{
 		glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);
 	}
-	void Shader::SetVec4(const std::string& name, glm::vec4 value) const
+	void Shader::SetUniform(const std::string& name, const glm::vec4 value) const
 	{
 		glUniform4f(glGetUniformLocation(m_ID, name.c_str()), value.x, value.y, value.z, value.w);
 	}
-	void Shader::SetMat4(const std::string& name, glm::mat4 mat) const
+	void Shader::SetUniform(const std::string& name, const glm::mat4 mat) const
 	{
 		glUniformMatrix4fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 	}
-	void Shader::SetTexture(const std::string& name, uint32_t index, GLenum textureUnit) const
+	void Shader::SetUniform(const std::string& name, uint32_t index, GLenum textureUnit) const
 	{
 		if (index >= m_Textures.size())
 		{

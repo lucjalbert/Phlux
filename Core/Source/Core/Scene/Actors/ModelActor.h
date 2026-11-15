@@ -2,10 +2,13 @@
 
 #include "Actor.h"
 #include "Core/Renderer/Model.h"
+#include "Core/Renderer/Material.h"
+#include "Core/Renderer/MaterialLibrary.h"
 
 #include <json_fwd.hpp>
 
 #include <string>
+#include <memory>
 
 namespace Actor {
 
@@ -19,9 +22,14 @@ namespace Actor {
 		virtual const std::string GetTypeName() const override { return "ModelActor"; }
 		virtual void Serialize(nlohmann::json& j) const override;
 
+		virtual void GetProperties(PropertyList& list) override;
+
 		const Renderer::Model& GetModel() const { return m_Model; }
+		const Renderer::MaterialId& GetMaterial() const { return m_Material; }
+		void SetMaterial(Renderer::MaterialId id) { m_Material = id; }
 
 	private:
 		Renderer::Model m_Model;
+		Renderer::MaterialId m_Material;
 	};
 }

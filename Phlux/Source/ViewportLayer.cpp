@@ -18,28 +18,26 @@
 #include <GLFW/glfw3.h>
 
 #include <stb_image.h>
+#include <imgui.h>
+#include <imfilebrowser.h>
+#include <ImGuizmo.h>
 
 #include <print>
 #include <iostream>
 #include <stdint.h>
 #include <vector>
 
-#include <imgui.h>
-#include <imfilebrowser.h>
-#include <ImGuizmo.h>
-
 ViewportLayer::ViewportLayer()
-	: m_Shader(Renderer::Shader("Shaders/default.vert", "Shaders/default.frag")),
-	m_InputManager(Core::Application::Get().GetInputManager()),
+	: m_InputManager(Core::Application::Get().GetInputManager()),
 	m_Scene(Core::Application::Get().GetScene()),
-	m_Camera(m_Scene.GetCamera())
+	m_Camera(m_Scene.GetCamera()),
+	m_MaterialLibrary(m_Scene.GetMaterialLibrary()),
+	m_ShaderLibrary(Core::Application::Get().GetShaderLibrary())
 {
 	std::println("Initializing Viewport Layer");	
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_DEPTH_TEST);
-
-	m_Shader.Use();
 
 	// Temp auto-import test model on startup
 	Renderer::Model model = Renderer::Model("D:\\_LUC\\__MYPROJECTS\\Phlux\\Content\\Meshes\\Cube.obj");
@@ -48,8 +46,6 @@ ViewportLayer::ViewportLayer()
 
 ViewportLayer::~ViewportLayer()
 {
-	m_Shader.Destroy();
-
 	std::println("Destroying Viewport Layer");
 }
 
@@ -155,28 +151,33 @@ void ViewportLayer::OnRender()
 	glm::mat4 projection;
 	projection = m_Camera.GetProjectionMatrix();
 
-	m_Shader.Use();
-	m_Shader.SetMat4("view", view);
-	m_Shader.SetMat4("projection", projection);
-
-	for (uint32_t i = 0; i < m_Scene.GetNumActors(); i++)
+	for (const auto& actor : m_Scene.GetActors())
 	{
-		auto& actor = m_Scene.GetActors()[i];
-		m_Shader.SetMat4("model", m_Scene.GetActors()[i]->GetModelMatrix());
+		auto modelActor = dynamic_cast<Actor::ModelActor*>(actor.get());
+		if (!modelActor)
+			continue;
 
-		m_Shader.Use();
+		const Renderer::Material& material = m_MaterialLibrary.Get(modelActor->GetMaterial());
+		const Renderer::Shader& shader = m_ShaderLibrary.Get(material.GetShaderId());
+		shader.Use();
+		material.ApplyParams(shader);
+
+		shader.SetUniform("view", view);
+		shader.SetUniform("projection", projection);
+		shader.SetUniform("model", modelActor->GetModelMatrix());
+
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glEnable(GL_POLYGON_OFFSET_FILL);
 		glPolygonOffset(1.0f, 1.0f);
-		m_Shader.SetBool("bIsSelected", false);
-		m_Shader.SetBool("bIsWireframe", false);
+		shader.SetUniform("bIsSelected", false);
+		shader.SetUniform("bIsWireframe", false);
 		actor->Render(); // Fill
 
 		if (m_WireOnShadedMode || actor->bSelected)
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			m_Shader.SetBool("bIsWireframe", true);
-			m_Shader.SetBool("bIsSelected", actor->bSelected);
+			shader.SetUniform("bIsWireframe", true);
+			shader.SetUniform("bIsSelected", actor->bSelected);
 			actor->Render(); // Wireframe
 		}
 	}

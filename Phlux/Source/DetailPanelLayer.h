@@ -11,7 +11,7 @@ public:
 	virtual void OnImGuiRender();
 
 private:
-	std::weak_ptr<Actor::Actor> selectedActor;
-
 	float m_SliderSpeed = 0.1f;
+
+	void SetupMaterialComboMenu(const char* menuLabel);
 };

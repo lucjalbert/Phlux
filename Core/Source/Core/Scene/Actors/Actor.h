@@ -7,6 +7,10 @@
 #include <string>
 #include <vector>
 
+namespace Renderer {
+	class Material;
+}
+
 namespace Actor {
 
 	enum class PropertyType
@@ -18,28 +22,32 @@ namespace Actor {
 		VEC2,
 		VEC3,
 		VEC4,
-		MAT4
+		MAT4,
+		MATERIAL,
+		CATEGORY
 	};
 
 	struct Property
 	{
 		std::string Name;
 		PropertyType Type;
-		void* Value;
+		void* Value = nullptr;
 		bool bReadOnly = false;
 	};
 
 	class PropertyList
 	{
 	public:
-		void Add(const std::string& name, bool& value, bool readOnly = false)			{ m_Properties.push_back(Property(name, PropertyType::BOOL, &value, readOnly)); }
-		void Add(const std::string& name, std::string& value, bool readOnly = false)	{ m_Properties.push_back(Property(name, PropertyType::STRING, &value, readOnly)); }
-		void Add(const std::string& name, int& value, bool readOnly = false)			{ m_Properties.push_back(Property(name, PropertyType::INT, &value, readOnly)); }
-		void Add(const std::string& name, float& value, bool readOnly = false)			{ m_Properties.push_back(Property(name, PropertyType::FLOAT, &value, readOnly)); }
-		void Add(const std::string& name, glm::vec2& value, bool readOnly = false)		{ m_Properties.push_back(Property(name, PropertyType::VEC2, &value, readOnly)); }
-		void Add(const std::string& name, glm::vec3& value, bool readOnly = false)		{ m_Properties.push_back(Property(name, PropertyType::VEC3, &value, readOnly)); }
-		void Add(const std::string& name, glm::vec4& value, bool readOnly = false)		{ m_Properties.push_back(Property(name, PropertyType::VEC4, &value, readOnly)); }
-		void Add(const std::string& name, glm::mat4& value, bool readOnly = false)		{ m_Properties.push_back(Property(name, PropertyType::MAT4, &value, readOnly)); }
+		void Add(const std::string& name, bool& value, bool readOnly = false)					{ m_Properties.push_back(Property(name, PropertyType::BOOL, &value, readOnly)); }
+		void Add(const std::string& name, std::string& value, bool readOnly = false)			{ m_Properties.push_back(Property(name, PropertyType::STRING, &value, readOnly)); }
+		void Add(const std::string& name, int& value, bool readOnly = false)					{ m_Properties.push_back(Property(name, PropertyType::INT, &value, readOnly)); }
+		void Add(const std::string& name, float& value, bool readOnly = false)					{ m_Properties.push_back(Property(name, PropertyType::FLOAT, &value, readOnly)); }
+		void Add(const std::string& name, glm::vec2& value, bool readOnly = false)				{ m_Properties.push_back(Property(name, PropertyType::VEC2, &value, readOnly)); }
+		void Add(const std::string& name, glm::vec3& value, bool readOnly = false)				{ m_Properties.push_back(Property(name, PropertyType::VEC3, &value, readOnly)); }
+		void Add(const std::string& name, glm::vec4& value, bool readOnly = false)				{ m_Properties.push_back(Property(name, PropertyType::VEC4, &value, readOnly)); }
+		void Add(const std::string& name, glm::mat4& value, bool readOnly = false)				{ m_Properties.push_back(Property(name, PropertyType::MAT4, &value, readOnly)); }
+		void Add(const std::string& name, Renderer::Material& value, bool readOnly = false)		{ m_Properties.push_back(Property(name, PropertyType::MATERIAL, &value, readOnly)); }
+		void Add(const std::string& name)														{ m_Properties.push_back(Property(name, PropertyType::CATEGORY)); }
 
 		const std::vector<Property>& All() const { return m_Properties; }
 	private:
