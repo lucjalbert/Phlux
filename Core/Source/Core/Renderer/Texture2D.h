@@ -9,18 +9,18 @@ namespace Renderer {
 
 	struct Texture2DSpecification
 	{
-		std::string path;
-		uint32_t width = 0;
-		uint32_t height = 0;
+		std::string Path;
+		uint32_t Width = 0;
+		uint32_t Height = 0;
 
-		GLint tilingModeS = GL_REPEAT;
-		GLint tilingModeT = GL_REPEAT;
-		GLint minFiltering = GL_LINEAR_MIPMAP_LINEAR;
-		GLint magFiltering = GL_LINEAR;
+		GLint TilingModeS = GL_REPEAT;
+		GLint TilingModeT = GL_REPEAT;
+		GLint MinFiltering = GL_LINEAR_MIPMAP_LINEAR;
+		GLint MagFiltering = GL_LINEAR;
 
-		GLenum format = GL_RGB;
-		GLint internalFormat = GL_RGB;
-		GLenum type = GL_UNSIGNED_BYTE;
+		GLenum Format = GL_RGB;
+		GLint InternalFormat = GL_RGB;
+		GLenum Type = GL_UNSIGNED_BYTE;
 	};
 
 	class Texture2D
@@ -30,6 +30,7 @@ namespace Renderer {
 		~Texture2D();
 
 		void Load(GLint level = 0);
+		void Reserve();
 		void Use(GLenum textureUnit) const;
 		void Destroy() const;
 

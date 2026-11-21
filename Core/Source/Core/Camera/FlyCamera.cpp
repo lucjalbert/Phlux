@@ -17,10 +17,15 @@ namespace Camera {
 		return glm::lookAt(m_FlyCameraSpec.CameraPos,m_FlyCameraSpec.CameraPos + m_FlyCameraSpec.CameraFront, m_FlyCameraSpec.CameraUp);
 	}
 
-	glm::mat4 FlyCamera::GetProjectionMatrix()
+	glm::mat4 FlyCamera::GetProjectionMatrix() const
 	{
 		glm::vec2 frameBufferSize = Core::Application::Get().GetFramebufferSize();
 		return glm::perspective(glm::radians(45.0f), frameBufferSize.x / frameBufferSize.y, 0.1f, 10000.0f);
+	}
+
+	glm::mat4 FlyCamera::GetProjectionMatrix(glm::vec2 viewportDimensions) const
+	{
+		return glm::perspective(glm::radians(45.0f), viewportDimensions.x / viewportDimensions.y, 0.1f, 10000.0f);
 	}
 
 	void FlyCamera::UpdateCameraPosition(CameraDirection direction, float deltaTime)

@@ -15,12 +15,17 @@ namespace Renderer {
 		glGenTextures(1, &m_ID);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, Texture2DSpec.tilingModeS);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, Texture2DSpec.tilingModeT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, Texture2DSpec.minFiltering);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, Texture2DSpec.magFiltering);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, Texture2DSpec.TilingModeS);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, Texture2DSpec.TilingModeT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, Texture2DSpec.MinFiltering);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, Texture2DSpec.MagFiltering);
 
-		m_Texture2DSpec.internalFormat = m_Texture2DSpec.format;
+		m_Texture2DSpec.InternalFormat = m_Texture2DSpec.Format;
+
+		if (m_Texture2DSpec.Width > 0 && m_Texture2DSpec.Height > 0 && m_Texture2DSpec.Path.empty())
+		{
+			Reserve();
+		}
 	}
 
 	Texture2D::~Texture2D()
@@ -31,11 +36,11 @@ namespace Renderer {
 	void Texture2D::Load(GLint level)
 	{
 		int width, height, nrChannels;
-		unsigned char* data = stbi_load(m_Texture2DSpec.path.c_str(), &width, &height, &nrChannels, 0);
+		unsigned char* data = stbi_load(m_Texture2DSpec.Path.c_str(), &width, &height, &nrChannels, 0);
 		if (data)
 		{
 			glBindTexture(GL_TEXTURE_2D, m_ID);
-			glTexImage2D(GL_TEXTURE_2D, level, m_Texture2DSpec.internalFormat, width, height, 0, m_Texture2DSpec.format, m_Texture2DSpec.type, data);
+			glTexImage2D(GL_TEXTURE_2D, level, m_Texture2DSpec.InternalFormat, width, height, 0, m_Texture2DSpec.Format, m_Texture2DSpec.Type, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
@@ -44,6 +49,14 @@ namespace Renderer {
 			std::cout << "Failed to load texture" << std::endl;
 		}
 		stbi_image_free(data);
+	}
+
+	void Texture2D::Reserve()
+	{
+		glBindTexture(GL_TEXTURE_2D, m_ID);
+		glTexImage2D(GL_TEXTURE_2D, 0, m_Texture2DSpec.InternalFormat, m_Texture2DSpec.Width, m_Texture2DSpec.Height, 0, m_Texture2DSpec.Format, m_Texture2DSpec.Type, nullptr);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	void Texture2D::Use(GLenum textureUnit) const

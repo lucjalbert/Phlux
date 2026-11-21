@@ -181,6 +181,9 @@ void ViewportLayer::OnRender()
 			shader.SetUniform("bIsSelected", actor->bSelected);
 			actor->Render(); // Wireframe
 		}
+
+		shader.SetUniform("bIsWireframe", false);
+		shader.SetUniform("bIsSelected", false);
 	}
 }
 

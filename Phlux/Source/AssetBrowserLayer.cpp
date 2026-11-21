@@ -7,6 +7,7 @@
 #include "Core/Renderer/Material.h"
 #include "Core/Renderer/Texture2D.h"
 #include "Core/ImGui/ImGuiUtils.h"
+#include "Core/Renderer/AssetRegistry/AssetRegistry.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -14,8 +15,8 @@
 #include <imgui.h>
 
 AssetBrowserLayer::AssetBrowserLayer()
+	: m_AssetRegistry(Core::Application::Get().GetAssetRegistry())
 {
-	glGenFramebuffers(1, &m_FrameBufferObject);
 }
 
 void AssetBrowserLayer::OnImGuiRender()
@@ -36,7 +37,12 @@ void AssetBrowserLayer::OnImGuiRender()
 				if (ImGui::GetContentRegionAvail().x > m_TileSize.x && !isFirstModel)
 					ImGui::SameLine();
 
-				DrawAssetBrowserTile(model.GetName().c_str(), m_TileSize, static_cast<int>(modelId.Value));
+				Renderer::Texture2D* thumbnail = m_AssetRegistry.GetModelThumbnail(modelId);
+				if (thumbnail == nullptr)
+					thumbnail = m_AssetRegistry.GenerateAssetThumbnail(modelId, AssetRegistry::MaterialId::Default(), AssetRegistry::AssetType::MODEL);
+
+				ImTextureID thumbnailId = thumbnail->GetID();
+				DrawAssetBrowserTile(model.GetName().c_str(), m_TileSize, static_cast<int>(modelId.Value), thumbnailId);
 
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 				{
@@ -64,7 +70,12 @@ void AssetBrowserLayer::OnImGuiRender()
 				if (ImGui::GetContentRegionAvail().x > m_TileSize.x && !isFirstMaterial)
 					ImGui::SameLine();
 
-				DrawAssetBrowserTile(material.GetName().c_str(), m_TileSize, static_cast<int>(materialId.Value));
+				Renderer::Texture2D* thumbnail = m_AssetRegistry.GetMaterialThumbnail(materialId);
+				if (thumbnail == nullptr)
+					thumbnail = m_AssetRegistry.GenerateAssetThumbnail(AssetRegistry::ModelId(1), materialId, AssetRegistry::AssetType::MATERIAL);
+
+				ImTextureID thumbnailId = thumbnail->GetID();
+				DrawAssetBrowserTile(material.GetName().c_str(), m_TileSize, static_cast<int>(materialId.Value), thumbnailId);
 
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 				{
@@ -91,7 +102,7 @@ void AssetBrowserLayer::OnImGuiRender()
 	ImGui::End();
 }
 
-void AssetBrowserLayer::DrawAssetBrowserTile(const char* label, ImVec2 tileSize, int id)
+void AssetBrowserLayer::DrawAssetBrowserTile(const char* label, ImVec2 tileSize, int id, ImTextureID thumbnailTextureId)
 {
 	ImGui::PushID(id);
 
@@ -111,7 +122,8 @@ void AssetBrowserLayer::DrawAssetBrowserTile(const char* label, ImVec2 tileSize,
 	float thumbnailSize = m_TileSize.x - (padding * 2.0f);
 	ImVec2 thumbPosMin(positionMin.x + padding, positionMin.y + padding);
 	ImVec2 thumbPosMax(thumbPosMin.x + thumbnailSize, thumbPosMin.y + thumbnailSize);
-	drawList->AddRectFilled(thumbPosMin, thumbPosMax, IM_COL32(0, 0, 0, 255));
+	//drawList->AddRectFilled(thumbPosMin, thumbPosMax, IM_COL32(0, 0, 0, 255));
+	drawList->AddImage(thumbnailTextureId, thumbPosMax, thumbPosMin);
 
 	ImVec2 textPosition(positionMin.x + padding, thumbPosMax.y + padding);
 	std::string displayText = UI::TruncateTextEllipsis(label, thumbnailSize);
