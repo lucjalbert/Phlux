@@ -19,12 +19,8 @@ set(SOURCES
 
     Source/Core/Renderer/Shader.h
     Source/Core/Renderer/Shader.cpp
-    Source/Core/Renderer/ShaderLibrary.h
-    Source/Core/Renderer/ShaderLibrary.cpp
     Source/Core/Renderer/Material.h
     Source/Core/Renderer/Material.cpp
-    Source/Core/Renderer/MaterialLibrary.h
-    Source/Core/Renderer/MaterialLibrary.cpp
     Source/Core/Renderer/Texture2D.h
     Source/Core/Renderer/Texture2D.cpp
     Source/Core/Renderer/Mesh.h
@@ -33,6 +29,14 @@ set(SOURCES
     Source/Core/Renderer/Model.cpp
     Source/Core/Renderer/ModelSerialization.h
     Source/Core/Renderer/ModelSerialization.cpp
+    Source/Core/Renderer/AssetRegistry/AssetRegistry.h
+    Source/Core/Renderer/AssetRegistry/AssetRegistry.cpp
+    Source/Core/Renderer/AssetRegistry/ShaderLibrary.h
+    Source/Core/Renderer/AssetRegistry/ShaderLibrary.cpp
+    Source/Core/Renderer/AssetRegistry/MaterialLibrary.h
+    Source/Core/Renderer/AssetRegistry/MaterialLibrary.cpp
+    Source/Core/Renderer/AssetRegistry/ModelLibrary.h
+    Source/Core/Renderer/AssetRegistry/ModelLibrary.cpp
 
     Source/Core/Input/Input.h
     Source/Core/Input/Input.cpp

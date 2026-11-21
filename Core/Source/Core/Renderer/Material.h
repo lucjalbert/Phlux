@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ShaderLibrary.h"
+#include "AssetRegistry/ShaderLibrary.h"
 #include "Core/Scene/Actors/Actor.h"
 
 #include <glm/glm.hpp>
@@ -17,7 +17,7 @@ namespace Renderer {
 	class Material
 	{
 	public:
-		Material(std::string name, ShaderId id = ShaderId::Default);
+		Material(std::string name, AssetRegistry::ShaderId id = AssetRegistry::ShaderId::Default);
 
 		void SetBool(const std::string& name, bool v)				{ m_Params[name] = v; }
 		void SetInt(const std::string& name, int v)					{ m_Params[name] = v; }
@@ -31,13 +31,13 @@ namespace Renderer {
 
 		std::string& GetName() { return m_Name; }
 		const std::string& GetName() const { return m_Name; }
-		const ShaderId GetShaderId() const;
+		const AssetRegistry::ShaderId GetShaderId() const;
 
 		void GetProperties(Actor::PropertyList& list);
 
 	private:
 		std::string m_Name;
-		ShaderId m_ShaderId;
+		AssetRegistry::ShaderId m_ShaderId;
 		std::unordered_map<std::string, UniformValue> m_Params;
 	};
 }

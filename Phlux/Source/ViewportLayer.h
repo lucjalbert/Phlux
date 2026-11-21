@@ -1,9 +1,7 @@
 #pragma once
 
 #include "Core/Layer.h"
-#include "Core/Renderer/Shader.h"
-#include "Core/Renderer/Model.h"
-#include "Core/Renderer/MaterialLibrary.h"
+#include "Core/Renderer/AssetRegistry/MaterialLibrary.h"
 #include "Core/Camera/FlyCamera.h"
 #include "Core/Scene/Scene.h"
 #include "Core/Input/Input.h"
@@ -35,8 +33,8 @@ private:
 	Input::Input& m_InputManager;
 	Scene::Scene& m_Scene;
 	Camera::FlyCamera& m_Camera;
-	const Renderer::MaterialLibrary& m_MaterialLibrary;
-	const Renderer::ShaderLibrary& m_ShaderLibrary;
+	const AssetRegistry::MaterialLibrary& m_MaterialLibrary;
+	const AssetRegistry::ShaderLibrary& m_ShaderLibrary;
 
 	bool m_Enable3DGuizmo = false;
 	ImGuizmo::OPERATION m_GuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;

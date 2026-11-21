@@ -4,6 +4,8 @@
 
 set(SOURCES
     Source/Main.cpp
+    Source/AssetBrowserLayer.h
+    Source/AssetBrowserLayer.cpp
     Source/ViewportLayer.h
     Source/ViewportLayer.cpp
     Source/TitleBarLayer.h

@@ -14,17 +14,15 @@
 #include <iostream>
 #include <vector>
 #include <filesystem>
-#include <iostream>
 
 namespace Renderer {
 
 	Model::Model(std::string name, std::vector<std::unique_ptr<Mesh>> meshes)
 		: m_Name(std::move(name)), m_Meshes(std::move(meshes))
 	{
-		std::cout << "Attempted to load model from stored meshes" << std::endl;
 	}
 
-	void Model::Draw()
+	void Model::Draw() const
 	{
 		for (uint32_t i = 0; i < m_Meshes.size(); i++)
 		{

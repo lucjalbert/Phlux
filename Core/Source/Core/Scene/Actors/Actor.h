@@ -9,6 +9,7 @@
 
 namespace Renderer {
 	class Material;
+	class Model;
 }
 
 namespace Actor {
@@ -23,6 +24,7 @@ namespace Actor {
 		VEC3,
 		VEC4,
 		MAT4,
+		MODEL,
 		MATERIAL,
 		CATEGORY
 	};
@@ -46,6 +48,7 @@ namespace Actor {
 		void Add(const std::string& name, glm::vec3& value, bool readOnly = false)				{ m_Properties.push_back(Property(name, PropertyType::VEC3, &value, readOnly)); }
 		void Add(const std::string& name, glm::vec4& value, bool readOnly = false)				{ m_Properties.push_back(Property(name, PropertyType::VEC4, &value, readOnly)); }
 		void Add(const std::string& name, glm::mat4& value, bool readOnly = false)				{ m_Properties.push_back(Property(name, PropertyType::MAT4, &value, readOnly)); }
+		void Add(const std::string& name, Renderer::Model& value, bool readOnly = false)		{ m_Properties.push_back(Property(name, PropertyType::MODEL, &value, readOnly)); }
 		void Add(const std::string& name, Renderer::Material& value, bool readOnly = false)		{ m_Properties.push_back(Property(name, PropertyType::MATERIAL, &value, readOnly)); }
 		void Add(const std::string& name)														{ m_Properties.push_back(Property(name, PropertyType::CATEGORY)); }
 
@@ -80,11 +83,6 @@ namespace Actor {
 
 	protected:
 		std::string m_Name;
-
-		//glm::vec3 m_Position = glm::vec3(0.0f, 0.0f, 0.0f);
-		//glm::vec3 m_Rotation = glm::vec3(0.0f, 0.0f, 0.0f);
-		//glm::vec3 m_Scale = glm::vec3(1.0f, 1.0f, 1.0f);
-
 		glm::mat4 m_ModelMatrix = glm::mat4(1.0f);
 
 	private:

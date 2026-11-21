@@ -3,7 +3,8 @@
 #include "Core/Application.h"
 #include "Core/Scene/Actors/Actor.h"
 #include "Core/Scene/Actors/ModelActor.h"
-#include "Core/Renderer/MaterialLibrary.h"
+#include "Core/Renderer/AssetRegistry/ModelLibrary.h"
+#include "Core/Renderer/AssetRegistry/MaterialLibrary.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -88,6 +89,10 @@ void DetailPanelLayer::OnImGuiRender()
 				case Actor::PropertyType::MATERIAL:
 					SetupMaterialComboMenu("Assigned Material");
 					break;
+
+				case Actor::PropertyType::MODEL:
+					SetupModelComboMenu("Assigned Model");
+					break;
 				default:
 					break;
 				}
@@ -102,10 +107,10 @@ void DetailPanelLayer::OnImGuiRender()
 
 void DetailPanelLayer::SetupMaterialComboMenu(const char* menuLabel)
 {
-	const Renderer::MaterialLibrary& materialLibrary = Core::Application::Get().GetScene().GetMaterialLibrary();
-	std::vector<Renderer::MaterialId> materials = materialLibrary.GetAllMaterialIds();
+	const AssetRegistry::MaterialLibrary& materialLibrary = Core::Application::Get().GetAssetRegistry().GetMaterialLibrary();
+	std::vector<AssetRegistry::MaterialId> materials = materialLibrary.GetAllMaterialIds();
 
-	Renderer::MaterialId selectedMaterialId = Renderer::MaterialId::Default();
+	AssetRegistry::MaterialId selectedMaterialId = AssetRegistry::MaterialId::Default();
 	auto selectedActor = Core::Application::Get().GetScene().GetSelectedActor();
 	auto selectedModelActor = dynamic_cast<Actor::ModelActor*>(selectedActor);
 	
@@ -119,7 +124,7 @@ void DetailPanelLayer::SetupMaterialComboMenu(const char* menuLabel)
 
 	if (ImGui::BeginCombo(menuLabel, materialLibrary.Get(selectedMaterialId).GetName().c_str()))
 	{
-		for (Renderer::MaterialId id : materialLibrary.GetAllMaterialIds())
+		for (AssetRegistry::MaterialId id : materialLibrary.GetAllMaterialIds())
 		{
 			ImGui::PushID(static_cast<int>(id.Value));
 
@@ -143,8 +148,59 @@ void DetailPanelLayer::SetupMaterialComboMenu(const char* menuLabel)
 	{
 		if (const ImGuiPayload* droppedMaterialPayload = ImGui::AcceptDragDropPayload("MaterialId"))
 		{
-			selectedMaterialId = *(Renderer::MaterialId*)droppedMaterialPayload->Data;
+			selectedMaterialId = *(AssetRegistry::MaterialId*)droppedMaterialPayload->Data;
 			selectedModelActor->SetMaterial(selectedMaterialId);
+		}
+
+		ImGui::EndDragDropTarget();
+	}
+}
+
+void DetailPanelLayer::SetupModelComboMenu(const char* menuLabel)
+{
+	const AssetRegistry::ModelLibrary& modelLibrary = Core::Application::Get().GetAssetRegistry().GetModelLibrary();
+	std::vector<AssetRegistry::ModelId> models = modelLibrary.GetAllModelIds();
+
+	AssetRegistry::ModelId selectedModelId = AssetRegistry::ModelId::Default();
+	auto selectedActor = Core::Application::Get().GetScene().GetSelectedActor();
+	auto selectedModelActor = dynamic_cast<Actor::ModelActor*>(selectedActor);
+
+	if (!selectedModelActor)
+	{
+		std::cerr << "Non model actor cannot have a model type property" << std::endl;
+		return;
+	}
+
+	selectedModelId = selectedModelActor->GetModelId();
+
+	if (ImGui::BeginCombo(menuLabel, modelLibrary.Get(selectedModelId).GetName().c_str()))
+	{
+		for (AssetRegistry::ModelId id : modelLibrary.GetAllModelIds())
+		{
+			ImGui::PushID(static_cast<int>(id.Value));
+
+			const bool isSelected = (selectedModelId == id);
+
+			if (ImGui::Selectable(modelLibrary.Get(id).GetName().c_str(), isSelected))
+			{
+				selectedModelId = id;
+				selectedModelActor->SetModel(id);
+			}
+
+			if (isSelected)
+				ImGui::SetItemDefaultFocus();
+
+			ImGui::PopID();
+		}
+		ImGui::EndCombo();
+	}
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* droppedMaterialPayload = ImGui::AcceptDragDropPayload("ModelId"))
+		{
+			selectedModelId = *(AssetRegistry::ModelId*)droppedMaterialPayload->Data;
+			selectedModelActor->SetModel(selectedModelId);
 		}
 
 		ImGui::EndDragDropTarget();

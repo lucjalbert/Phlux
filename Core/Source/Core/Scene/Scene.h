@@ -3,7 +3,8 @@
 #include "Actors/Actor.h"
 #include "Core/Camera/FlyCamera.h"
 #include "Core/Renderer/Material.h"
-#include "Core/Renderer/MaterialLibrary.h"
+#include "Core/Renderer/AssetRegistry/MaterialLibrary.h"
+#include "Core/Renderer/AssetRegistry/ModelLibrary.h"
 
 #include <string>
 #include <vector>
@@ -36,8 +37,6 @@ namespace Scene {
 		Actor::Actor* GetActorByName(std::string);
 		uint32_t GetNumActors();
 
-		Renderer::MaterialLibrary& GetMaterialLibrary() { return m_Materials; }
-
 		Actor::Actor* GetSelectedActor();
 		void SetSelectedActor(Actor::Actor* actor);
 		void DeselectActor();
@@ -49,7 +48,8 @@ namespace Scene {
 		Camera::FlyCamera& GetCamera() { return m_Camera; }
 	private:
 		std::vector<std::unique_ptr<Actor::Actor>> m_Actors;
-		Renderer::MaterialLibrary m_Materials;
+		AssetRegistry::ModelLibrary& m_Models;
+		AssetRegistry::MaterialLibrary& m_Materials;
 		Camera::FlyCamera m_Camera;
 	};
 }

@@ -16,7 +16,7 @@ namespace Renderer {
 		Model(std::string path) { LoadModel(path); }
 		Model(std::string name, std::vector<std::unique_ptr<Mesh>> meshes);
 
-		void Draw();
+		void Draw() const;
 
 		const std::string GetName() const { return m_Name; }
 		const std::vector<std::unique_ptr<Mesh>>& GetMeshes() const { return m_Meshes; }

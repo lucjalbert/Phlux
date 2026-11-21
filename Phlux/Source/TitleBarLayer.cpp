@@ -3,6 +3,7 @@
 #include "Core/Application.h"
 #include "Core/Layer.h"
 #include "Core/Renderer/Model.h"
+#include "Core/Renderer/AssetRegistry/ModelLibrary.h"
 #include "Core/Scene/Actors/ModelActor.h"
 #include "Core/ImGui/ImGuiUtils.h"
 
@@ -19,6 +20,7 @@
 TitleBarLayer::TitleBarLayer()
 	: m_Scene(Core::Application::Get().GetScene()),
 	m_Window(Core::Application::Get().GetWindow().GetHandle()),
+	m_AssetRegistry(Core::Application::Get().GetAssetRegistry()),
 	m_ImportObjDialog(ImGui::FileBrowser()),
 	m_SaveSceneDialog(ImGui::FileBrowser(ImGuiFileBrowserFlags_EnterNewFilename | ImGuiFileBrowserFlags_CreateNewDir)),
 	m_LoadSceneDialog(ImGui::FileBrowser())
@@ -179,9 +181,9 @@ void TitleBarLayer::OnImGuiRender()
 		if (m_ImportObjDialog.HasSelected())
 		{
 			std::cout << "Selected filename " << m_ImportObjDialog.GetSelected().string() << std::endl;
-			Renderer::Model model = Renderer::Model(m_ImportObjDialog.GetSelected().string());
+			AssetRegistry::ModelId modelId = m_AssetRegistry.GetModelLibrary().Create((m_ImportObjDialog.GetSelected().string()));
 
-			m_Scene.AddActor<Actor::ModelActor>(std::move(model));
+			m_Scene.AddActor<Actor::ModelActor>(modelId);
 			m_ImportObjDialog.ClearSelected();
 		}
 	}

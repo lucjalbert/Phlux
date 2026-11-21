@@ -9,8 +9,8 @@
 #include "Core/Renderer/Model.h"
 #include "Core/Renderer/Mesh.h"
 #include "Core/Renderer/ModelSerialization.h"
-#include "Core/Renderer/MaterialLibrary.h"
-#include "Core/Renderer/ShaderLibrary.h"
+#include "Core/Renderer/AssetRegistry/MaterialLibrary.h"
+#include "Core/Renderer/AssetRegistry/ShaderLibrary.h"
 
 #include <glm/glm.hpp>
 
@@ -25,15 +25,17 @@
 namespace Scene {
 
 	Scene::Scene()
+		: m_Materials(Core::Application::Get().GetAssetRegistry().GetMaterialLibrary()),
+		m_Models(Core::Application::Get().GetAssetRegistry().GetModelLibrary())
 	{
 		Camera::FlyCameraSpecification flyCameraSpec;
 		m_Camera = Camera::FlyCamera(flyCameraSpec);
 
-		Renderer::MaterialId redId = m_Materials.Create(Renderer::ShaderId::Unlit, "Unlit Red");
+		AssetRegistry::MaterialId redId = m_Materials.Create(AssetRegistry::ShaderId::Unlit, "Unlit Red");
 		Renderer::Material& red = m_Materials.Get(redId);
 		red.SetVec4("aColor", glm::vec4(1.0, 0.0, 0.0, 1.0));
 
-		Renderer::MaterialId blueId = m_Materials.Create(Renderer::ShaderId::Unlit, "Unlit Blue");
+		AssetRegistry::MaterialId blueId = m_Materials.Create(AssetRegistry::ShaderId::Unlit, "Unlit Blue");
 		Renderer::Material& blue = m_Materials.Get(blueId);
 		blue.SetVec4("aColor", glm::vec4(0.0, 0.0, 1.0, 1.0));
 	}
@@ -102,9 +104,9 @@ namespace Scene {
 		std::string type = j.at(JsonKeys::ActorType).get<std::string>();
 		if (type == "ModelActor")
 		{
-			auto actor = std::make_unique<Actor::ModelActor>(ModelFromJson(j.at(JsonKeys::ModelData)));
+			/*auto actor = std::make_unique<Actor::ModelActor>(ModelFromJson(j.at(JsonKeys::ModelData)));
 			actor->Deserialize(j);
-			return actor;
+			return actor;*/
 		}
 		throw std::runtime_error("Unknown actor type: " + type);
 	}
@@ -192,7 +194,8 @@ namespace Scene {
 			localSpaceRay.origin = glm::vec3(invModel * glm::vec4(worldSpaceRay.origin, 1.0f));
 			localSpaceRay.direction = glm::vec3(invModel * glm::vec4(worldSpaceRay.direction, 0.0f));
 
-			const auto& meshes = modelActor->GetModel().GetMeshes();
+			const auto modelId = modelActor->GetModelId();
+			const auto& meshes = m_Models.Get(modelId).GetMeshes();
 			for (const auto& mesh : meshes)
 			{
 				const auto& indices = mesh->GetIndices();

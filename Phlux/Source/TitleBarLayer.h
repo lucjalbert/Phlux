@@ -2,6 +2,7 @@
 
 #include "Core/Layer.h"
 #include "Core/Scene/Scene.h"
+#include "Core/Renderer/AssetRegistry/AssetRegistry.h"
 
 #include "GLFW/glfw3.h"
 
@@ -25,6 +26,7 @@ private:
 
 	Scene::Scene& m_Scene;
 	GLFWwindow* m_Window;
+	AssetRegistry::AssetRegistry& m_AssetRegistry;
 
 	bool m_ShowDemoWindow = false;
 

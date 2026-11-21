@@ -3,17 +3,17 @@
 #include <algorithm>
 #include <vector>
 
-namespace Renderer {
+namespace AssetRegistry {
 
 	MaterialLibrary::MaterialLibrary()
 	{
-		m_Default = std::make_unique<Material>("Default Material", ShaderId::Default());
+		m_Default = std::make_unique<Renderer::Material>("Default Material", ShaderId::Default());
 	}
 
 	MaterialId MaterialLibrary::Create(ShaderId shader, std::string name)
 	{
 		MaterialId id{ m_NextId++ };
-		m_Materials.emplace(id.Value, std::make_unique<Material>(name, shader));
+		m_Materials.emplace(id.Value, std::make_unique<Renderer::Material>(name, shader));
 		return id;
 	}
 
@@ -22,13 +22,13 @@ namespace Renderer {
 		if (id.Value != 0) m_Materials.erase(id.Value);
 	}
 
-	Material& MaterialLibrary::Get(MaterialId id)
+	Renderer::Material& MaterialLibrary::Get(MaterialId id)
 	{
 		auto material = m_Materials.find(id.Value);
 		return material != m_Materials.end() ? *material->second : *m_Default;
 	}
 
-	const Material& MaterialLibrary::Get(MaterialId id) const
+	const Renderer::Material& MaterialLibrary::Get(MaterialId id) const
 	{
 		auto material = m_Materials.find(id.Value);
 		return material != m_Materials.end() ? *material->second : *m_Default;

@@ -5,6 +5,7 @@
 #include "Core/Renderer/Shader.h"
 #include "Core/Renderer/Texture2D.h"
 #include "Core/Renderer/Model.h"
+#include "Core/Renderer/AssetRegistry/ModelLibrary.h"
 #include "Core/Input/Input.h"
 #include "Core/Camera/FlyCamera.h"
 #include "Core/Scene/Actors/Actor.h"
@@ -31,8 +32,8 @@ ViewportLayer::ViewportLayer()
 	: m_InputManager(Core::Application::Get().GetInputManager()),
 	m_Scene(Core::Application::Get().GetScene()),
 	m_Camera(m_Scene.GetCamera()),
-	m_MaterialLibrary(m_Scene.GetMaterialLibrary()),
-	m_ShaderLibrary(Core::Application::Get().GetShaderLibrary())
+	m_MaterialLibrary(Core::Application::Get().GetAssetRegistry().GetMaterialLibrary()),
+	m_ShaderLibrary(Core::Application::Get().GetAssetRegistry().GetShaderLibrary())
 {
 	std::println("Initializing Viewport Layer");	
 
@@ -40,8 +41,8 @@ ViewportLayer::ViewportLayer()
 	glEnable(GL_DEPTH_TEST);
 
 	// Temp auto-import test model on startup
-	Renderer::Model model = Renderer::Model("D:\\_LUC\\__MYPROJECTS\\Phlux\\Content\\Meshes\\Cube.obj");
-	m_Scene.AddActor<Actor::ModelActor>(std::move(model));
+	AssetRegistry::ModelId modelId = AssetRegistry::ModelId(0);
+	m_Scene.AddActor<Actor::ModelActor>(modelId);
 }
 
 ViewportLayer::~ViewportLayer()

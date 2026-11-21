@@ -2,8 +2,9 @@
 
 #include "Actor.h"
 #include "Core/Renderer/Model.h"
+#include "Core/Renderer/AssetRegistry/ModelLibrary.h"
 #include "Core/Renderer/Material.h"
-#include "Core/Renderer/MaterialLibrary.h"
+#include "Core/Renderer/AssetRegistry/MaterialLibrary.h"
 
 #include <json_fwd.hpp>
 
@@ -15,7 +16,7 @@ namespace Actor {
 	class ModelActor : public Actor
 	{
 	public:
-		ModelActor(Renderer::Model model);
+		ModelActor(AssetRegistry::ModelId modelId);
 
 		virtual void Render() override;
 
@@ -24,13 +25,18 @@ namespace Actor {
 
 		virtual void GetProperties(PropertyList& list) override;
 
-		const Renderer::Model& GetModel() const { return m_Model; }
-		Renderer::MaterialId GetMaterialId() { return m_Material; }
-		const Renderer::MaterialId GetMaterialId() const { return m_Material; }
-		void SetMaterial(Renderer::MaterialId id) { m_Material = id; }
+		AssetRegistry::ModelId GetModelId() { return m_Model; }
+		const AssetRegistry::ModelId GetModelId() const { return m_Model; }
+		void SetModel(AssetRegistry::ModelId id) { m_Model = id; }
+
+		AssetRegistry::MaterialId GetMaterialId() { return m_Material; }
+		const AssetRegistry::MaterialId GetMaterialId() const { return m_Material; }
+		void SetMaterial(AssetRegistry::MaterialId id) { m_Material = id; }
 
 	private:
-		Renderer::Model m_Model;
-		Renderer::MaterialId m_Material;
+		AssetRegistry::ModelId m_Model;
+		AssetRegistry::MaterialId m_Material;
+
+		AssetRegistry::ModelLibrary& m_ModelLibrary;
 	};
 }

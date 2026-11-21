@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ShaderLibrary.h"
-#include "Material.h"
+#include "Core/Renderer/Material.h"
 
 #include <cstdint>
 #include <unordered_map>
@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace Renderer {
+namespace AssetRegistry {
 
 	struct MaterialId
 	{
@@ -28,11 +28,11 @@ namespace Renderer {
 
 		void Destroy(MaterialId id);
 
-		Material& Get(MaterialId id);
-		const Material& Get(MaterialId id) const;
+		Renderer::Material& Get(MaterialId id);
+		const Renderer::Material& Get(MaterialId id) const;
 
-		Material& GetDefaultMaterial() { return *m_Default; }
-		const Material& GetDefaultMaterial() const { return *m_Default; }
+		Renderer::Material& GetDefaultMaterial() { return *m_Default; }
+		const Renderer::Material& GetDefaultMaterial() const { return *m_Default; }
 
 		const uint32_t GetMaterialCount() { return static_cast<uint32_t>(m_Materials.size()); }
 
@@ -40,7 +40,7 @@ namespace Renderer {
 
 	private:
 		uint64_t m_NextId = 1;
-		std::unordered_map<uint64_t, std::unique_ptr<Material>> m_Materials;
-		std::unique_ptr<Material> m_Default;
+		std::unordered_map<uint64_t, std::unique_ptr<Renderer::Material>> m_Materials;
+		std::unique_ptr<Renderer::Material> m_Default;
 	};
 }

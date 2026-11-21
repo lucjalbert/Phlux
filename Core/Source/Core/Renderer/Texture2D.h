@@ -33,6 +33,7 @@ namespace Renderer {
 		void Use(GLenum textureUnit) const;
 		void Destroy() const;
 
+		GLuint GetID() const { return m_ID; }
 	private:
 		GLuint m_ID;
 

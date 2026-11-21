@@ -5,7 +5,7 @@
 #include "Input/Input.h"
 #include "ImGui/ImGuiLayer.h"
 #include "Scene/Scene.h"
-#include "Renderer/ShaderLibrary.h"
+#include "Renderer/AssetRegistry/AssetRegistry.h"
 
 #include <glm/glm.hpp>
 
@@ -39,7 +39,7 @@ namespace Core {
 		Window& GetWindow() const { return *m_Window; }
 		Input::Input& GetInputManager() const { return *m_Input; }
 		Scene::Scene& GetScene() const { return *m_Scene; }
-		Renderer::ShaderLibrary& GetShaderLibrary() const { return *m_ShaderLibrary; }
+		AssetRegistry::AssetRegistry& GetAssetRegistry() const { return *m_AssetRegistry; }
 
 		static Application& Get();
 		static float GetTime();
@@ -57,6 +57,6 @@ namespace Core {
 
 		std::unique_ptr<Scene::Scene> m_Scene;
 
-		std::unique_ptr<Renderer::ShaderLibrary> m_ShaderLibrary;
+		std::unique_ptr<AssetRegistry::AssetRegistry> m_AssetRegistry;
 	};
 }

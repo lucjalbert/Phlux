@@ -4,7 +4,7 @@
 #include "Layer.h"
 #include "Input/Input.h"
 #include "Scene/Scene.h"
-#include "Renderer/ShaderLibrary.h"
+#include "Renderer/AssetRegistry/AssetRegistry.h"
 
 #include <GLFW/glfw3.h>
 
@@ -39,7 +39,7 @@ namespace Core {
 		m_Window = std::make_unique<Window>(m_Specification.WindowSpec);
 		m_Window->Create();
 
-		m_ShaderLibrary = std::make_unique<Renderer::ShaderLibrary>();
+		m_AssetRegistry = std::make_unique<AssetRegistry::AssetRegistry>();
 
 		m_Scene = std::make_unique<Scene::Scene>();
 

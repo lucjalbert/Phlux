@@ -14,4 +14,5 @@ private:
 	float m_SliderSpeed = 0.1f;
 
 	void SetupMaterialComboMenu(const char* menuLabel);
+	void SetupModelComboMenu(const char* menuLabel);
 };
