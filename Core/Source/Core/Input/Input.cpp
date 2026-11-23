@@ -80,7 +80,7 @@ namespace Input {
 
 	void Input::OnMouseButton(int button, int action)
 	{
-		if (ImGui::GetIO().WantCaptureMouse)
+		if (ImGui::GetIO().WantCaptureMouse && !m_IsViewportFocused)
 			return;
 
 		if (action == GLFW_PRESS)

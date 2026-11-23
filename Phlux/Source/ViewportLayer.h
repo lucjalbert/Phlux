@@ -2,6 +2,7 @@
 
 #include "Core/Layer.h"
 #include "Core/Renderer/AssetRegistry/MaterialLibrary.h"
+#include "Core/Renderer/Texture2D.h"
 #include "Core/Camera/FlyCamera.h"
 #include "Core/Scene/Scene.h"
 #include "Core/Input/Input.h"
@@ -14,6 +15,7 @@
 
 #include <stdint.h>
 #include <vector>
+#include <memory>
 
 class ViewportLayer : public Core::Layer
 {
@@ -24,6 +26,8 @@ public:
 	virtual void OnUpdate(float deltaTime) override;
 	virtual void OnRender() override;
 	virtual void OnImGuiRender() override;
+
+	void SetupViewportBuffer();
 
 private:
 	bool m_WireframeMode = false;
@@ -38,4 +42,9 @@ private:
 
 	bool m_Enable3DGuizmo = false;
 	ImGuizmo::OPERATION m_GuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+
+	GLuint m_ViewportFBO = 0;
+	GLuint m_ViewportDepthRBO = 0;
+	std::unique_ptr<Renderer::Texture2D> m_ViewportBuffer;
+	glm::vec2 m_ViewportBufferSize;
 };

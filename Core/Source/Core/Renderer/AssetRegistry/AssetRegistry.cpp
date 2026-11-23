@@ -62,7 +62,7 @@ namespace AssetRegistry {
 		model.Draw();
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, static_cast<GLsizei>(Core::Application::Get().GetFramebufferSize().x), static_cast<GLsizei>(Core::Application::Get().GetFramebufferSize().y));
+		glViewport(0, 0, static_cast<GLsizei>(Core::Application::Get().GetViewportBufferSize().x), static_cast<GLsizei>(Core::Application::Get().GetViewportBufferSize().y));
 
 		assert(assetType == AssetType::MODEL || assetType == AssetType::MATERIAL);
 		if (assetType == AssetType::MODEL)

@@ -27,6 +27,8 @@ namespace Input {
 		float GetMouseDeltaPosX() const { return m_MouseDeltaPosX; }
 		float GetMouseDeltaPosY() const { return m_MouseDeltaPosY; }
 
+		void SetIsViewportFocused(bool isViewportFocused) { m_IsViewportFocused = isViewportFocused; }
+
 	private:
 		void OnKey(int key, int action);
 
@@ -50,6 +52,8 @@ namespace Input {
 
 		float m_MouseDeltaPosX = 0.0f;
 		float m_MouseDeltaPosY = 0.0f;
+
+		bool m_IsViewportFocused;
 
 		static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 		static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);

@@ -45,10 +45,15 @@ namespace Core {
 		static float GetTime();
 
 		glm::vec2 GetFramebufferSize() const;
+
+		glm::vec2 GetViewportBufferSize() const;
+		void SetViewportBufferSize(glm::vec2 viewportBufferSize);
 	private:
 		ApplicationSpecification m_Specification;
 		std::unique_ptr<Window> m_Window;
 		bool m_Running = false;
+
+		glm::vec2 m_ViewportBufferSize = glm::vec2(1280.0f, 720.0f);
 
 		std::vector<std::unique_ptr<Layer>> m_LayerStack;
 		std::unique_ptr<UI::ImGuiLayer> m_ImGuiLayer;

@@ -111,6 +111,16 @@ namespace Core {
 		return glm::vec2(std::max(frameBufferSize.x, 1.0f), std::max(frameBufferSize.y, 1.0f));
 	}
 
+	glm::vec2 Application::GetViewportBufferSize() const
+	{
+		return glm::vec2(std::max(m_ViewportBufferSize.x, 1.0f), std::max(m_ViewportBufferSize.y, 1.0f));
+	}
+
+	void Application::SetViewportBufferSize(glm::vec2 viewportBufferSize)
+	{
+		m_ViewportBufferSize = viewportBufferSize;
+	}
+
 	float Application::GetTime()
 	{
 		return static_cast<float>(glfwGetTime());

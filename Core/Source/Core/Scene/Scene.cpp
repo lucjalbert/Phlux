@@ -181,9 +181,9 @@ namespace Scene {
 
 	void Scene::SelectActorAtMouseLocation(float mousePosX, float mousePosY)
 	{
-		glm::vec2 windowSize = Core::Application::Get().GetFramebufferSize();
+		glm::vec2 viewportSize = Core::Application::Get().GetFramebufferSize();
 
-		Utils::Ray worldSpaceRay = Utils::GenerateRayFromMousePos(mousePosX, mousePosY, windowSize.x, windowSize.y, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix());
+		Utils::Ray worldSpaceRay = Utils::GenerateRayFromMousePos(mousePosX, mousePosY, viewportSize.x, viewportSize.y, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix());
 
 		float smallestHitDistance = std::numeric_limits<float>::infinity();
 		Actor::Actor* actorToSelect = nullptr;

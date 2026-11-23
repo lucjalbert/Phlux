@@ -33,12 +33,12 @@ ViewportLayer::ViewportLayer()
 	m_Scene(Core::Application::Get().GetScene()),
 	m_Camera(m_Scene.GetCamera()),
 	m_MaterialLibrary(Core::Application::Get().GetAssetRegistry().GetMaterialLibrary()),
-	m_ShaderLibrary(Core::Application::Get().GetAssetRegistry().GetShaderLibrary())
+	m_ShaderLibrary(Core::Application::Get().GetAssetRegistry().GetShaderLibrary()),
+	m_ViewportBufferSize(Core::Application::Get().GetViewportBufferSize())
 {
 	std::println("Initializing Viewport Layer");	
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glEnable(GL_DEPTH_TEST);
+	SetupViewportBuffer();
 
 	// Temp auto-import test model on startup
 	AssetRegistry::ModelId modelId = AssetRegistry::ModelId::Default();
@@ -48,6 +48,31 @@ ViewportLayer::ViewportLayer()
 ViewportLayer::~ViewportLayer()
 {
 	std::println("Destroying Viewport Layer");
+}
+
+void ViewportLayer::SetupViewportBuffer()
+{
+	glGenFramebuffers(1, &m_ViewportFBO);
+	glGenRenderbuffers(1, &m_ViewportDepthRBO);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, m_ViewportFBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, m_ViewportDepthRBO);
+
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, static_cast<GLsizei>(m_ViewportBufferSize.x), static_cast<GLsizei>(m_ViewportBufferSize.y));
+	glViewport(0, 0, static_cast<GLsizei>(m_ViewportBufferSize.x), static_cast<GLsizei>(m_ViewportBufferSize.y));
+
+	Renderer::Texture2DSpecification viewportTextureSettings = Renderer::Texture2DSpecification();
+	viewportTextureSettings.Width = static_cast<uint32_t>(m_ViewportBufferSize.x);
+	viewportTextureSettings.Height = static_cast<uint32_t>(m_ViewportBufferSize.y);
+	m_ViewportBuffer = std::make_unique<Renderer::Texture2D>(viewportTextureSettings);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ViewportBuffer->GetID(), 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_ViewportDepthRBO);
+
+	assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glEnable(GL_DEPTH_TEST);
 }
 
 void ViewportLayer::OnUpdate(float deltaTime)
@@ -136,12 +161,18 @@ void ViewportLayer::OnUpdate(float deltaTime)
 			m_Scene.DeleteSelectedActor();
 		}
 	}
+
+	// Keep viewport buffer size in sync with ImGui window size
+	m_ViewportBufferSize = Core::Application::Get().GetViewportBufferSize();
 }
 
 void ViewportLayer::OnRender()
 {
-	glm::vec2 framebufferSize = Core::Application::Get().GetFramebufferSize();
-	glViewport(0, 0, static_cast<GLsizei>(framebufferSize.x), static_cast<GLsizei>(framebufferSize.y));
+	glBindFramebuffer(GL_FRAMEBUFFER, m_ViewportFBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, m_ViewportDepthRBO);
+
+	glm::vec2 viewportbufferSize = Core::Application::Get().GetViewportBufferSize();
+	glViewport(0, 0, static_cast<GLsizei>(viewportbufferSize.x), static_cast<GLsizei>(viewportbufferSize.y));
 
 	glClearColor(0.18f, 0.20f, 0.27f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -185,10 +216,25 @@ void ViewportLayer::OnRender()
 		shader.SetUniform("bIsWireframe", false);
 		shader.SetUniform("bIsSelected", false);
 	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
 void ViewportLayer::OnImGuiRender()
 {
+	ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+	Core::Application::Get().SetViewportBufferSize(glm::vec2(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y));
+
+	ImTextureID textureId = m_ViewportBuffer->GetID();
+	ImGui::Image(textureId, ImVec2(m_ViewportBufferSize.x, m_ViewportBufferSize.y), ImVec2(0, 1), ImVec2(1, 0));
+
+	if (ImGui::IsWindowHovered() || ImGui::IsWindowFocused())
+		m_InputManager.SetIsViewportFocused(true);
+	else
+		m_InputManager.SetIsViewportFocused(false);
+
 	if (m_Enable3DGuizmo)
 	{
 		ImGuiIO io = ImGui::GetIO();
@@ -201,4 +247,6 @@ void ViewportLayer::OnImGuiRender()
 			ImGuizmo::Manipulate(glm::value_ptr(m_Camera.GetViewMatrix()), glm::value_ptr(m_Camera.GetProjectionMatrix()), m_GuizmoOperation, ImGuizmo::MODE::LOCAL, glm::value_ptr(modelMatrix));
 		}
 	}
+
+	ImGui::End();
 }
