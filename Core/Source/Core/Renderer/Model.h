@@ -3,6 +3,7 @@
 #include "Mesh.h"
 
 #include <assimp/scene.h>
+#include <json.hpp>
 
 #include <vector>
 #include <string>

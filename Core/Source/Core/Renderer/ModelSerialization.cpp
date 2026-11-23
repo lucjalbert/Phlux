@@ -36,7 +36,7 @@ namespace {
 		if (!destination.empty())
 		{
 			std::memcpy(destination.data(), bytes.data(), bytes.size());
-		}
+		} 
 		return destination;
 	}
 }

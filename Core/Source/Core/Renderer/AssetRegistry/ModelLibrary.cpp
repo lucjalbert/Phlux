@@ -1,6 +1,10 @@
 #include "ModelLibrary.h"
 
 #include "Core/Renderer/Model.h"
+#include "Core/Renderer/ModelSerialization.h"
+#include "Core/Utils/JsonUtils.h"
+
+#include <json.hpp>
 
 #include <string>
 #include <memory>
@@ -23,9 +27,20 @@ namespace AssetRegistry {
 		return id;
 	}
 
+	ModelId ModelLibrary::Add(ModelId id, std::unique_ptr<Renderer::Model> model)
+	{
+		m_Models.emplace(id.Value, std::move(model));
+		return id;
+	}
+
 	void ModelLibrary::Destroy(ModelId id)
 	{
 		if (id.Value != 0) m_Models.erase(id.Value);
+	}
+
+	void ModelLibrary::Clear()
+	{
+		m_Models.clear();
 	}
 
 	Renderer::Model& ModelLibrary::Get(ModelId id)
@@ -55,12 +70,34 @@ namespace AssetRegistry {
 		std::vector<ModelId> modelIds;
 		modelIds.reserve(m_Models.size());
 
-		for (const auto& [key, material] : m_Models)
+		for (const auto& [key, model] : m_Models)
 			modelIds.push_back(ModelId{ key });
 
-		std::sort(modelIds.begin() + 1, modelIds.end(),
+		std::sort(modelIds.begin(), modelIds.end(),
 			[](ModelId a, ModelId b) { return a.Value < b.Value; });
 
 		return modelIds;
+	}
+
+	void ModelLibrary::Serialize(nlohmann::json& j) const
+	{
+		nlohmann::json models = nlohmann::json::array();
+		for (ModelId id : GetAllModelIds())
+		{
+			nlohmann::json model;
+			model[JsonKeys::ModelId] = id.Value;
+			model[JsonKeys::ModelData] = ModelToJson(Get(id));
+			models.push_back(std::move(model));
+		}
+		j[JsonKeys::ModelLibrary] = std::move(models);
+	}
+
+	void ModelLibrary::Deserialize(const nlohmann::json& j)
+	{
+		for (const auto& idJson : j.at(JsonKeys::ModelLibrary))
+		{
+			ModelId id = ModelId(idJson.at(JsonKeys::ModelId));
+			Add(id, std::make_unique<Renderer::Model>(ModelFromJson(idJson.at(JsonKeys::ModelData))));
+		}
 	}
 }

@@ -2,6 +2,8 @@
 
 #include "Core/Renderer/Model.h"
 
+#include <json.hpp>
+
 #include <memory>
 #include <unordered_map>
 #include <string>
@@ -23,8 +25,10 @@ namespace AssetRegistry {
 		ModelLibrary();
 
 		ModelId Create(std::string path);
+		ModelId Add(ModelId id, std::unique_ptr<Renderer::Model> model);
 
 		void Destroy(ModelId id);
+		void Clear();
 
 		Renderer::Model& Get(ModelId id);
 		const Renderer::Model& Get(ModelId id) const;
@@ -32,6 +36,9 @@ namespace AssetRegistry {
 		const uint32_t GetModelCount() { return static_cast<uint32_t>(m_Models.size()); }
 
 		std::vector<ModelId> GetAllModelIds() const;
+
+		void Serialize(nlohmann::json& j) const;
+		void Deserialize(const nlohmann::json& j);
 
 	private:
 		std::unordered_map<uint64_t, std::unique_ptr<Renderer::Model>> m_Models;

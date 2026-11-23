@@ -55,5 +55,7 @@ namespace JsonKeys {
 	constexpr const char* Vertices = "Vertices";
 	constexpr const char* Indices = "Indices";
 	constexpr const char* Meshes = "Meshes";
+	constexpr const char* ModelId = "ModelId";
 	constexpr const char* ModelData = "ModelData";
+	constexpr const char* ModelLibrary = "ModelLibrary";
 }

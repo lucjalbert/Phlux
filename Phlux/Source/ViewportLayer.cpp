@@ -41,7 +41,7 @@ ViewportLayer::ViewportLayer()
 	glEnable(GL_DEPTH_TEST);
 
 	// Temp auto-import test model on startup
-	AssetRegistry::ModelId modelId = AssetRegistry::ModelId(0);
+	AssetRegistry::ModelId modelId = AssetRegistry::ModelId::Default();
 	m_Scene.AddActor<Actor::ModelActor>(modelId);
 }
 

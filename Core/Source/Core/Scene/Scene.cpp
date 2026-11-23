@@ -45,6 +45,8 @@ namespace Scene {
 		nlohmann::json j;
 		j[JsonKeys::Version] = 1.0;
 		
+		m_Models.Serialize(j);
+
 		for (const auto& actor : m_Actors)
 		{
 			nlohmann::json actorJson;
@@ -75,6 +77,9 @@ namespace Scene {
 		{
 			nlohmann::json j = nlohmann::json::from_msgpack(jsonScene);
 
+			m_Models.Clear();
+			m_Models.Deserialize(j);
+
 			std::vector<std::unique_ptr<Actor::Actor>> loaded;
 			for (const auto& actorJson : j.at(JsonKeys::Actors))
 			{
@@ -104,9 +109,10 @@ namespace Scene {
 		std::string type = j.at(JsonKeys::ActorType).get<std::string>();
 		if (type == "ModelActor")
 		{
-			/*auto actor = std::make_unique<Actor::ModelActor>(ModelFromJson(j.at(JsonKeys::ModelData)));
+			AssetRegistry::ModelId id = AssetRegistry::ModelId(j.at(JsonKeys::ModelId));
+			auto actor = std::make_unique<Actor::ModelActor>(id);
 			actor->Deserialize(j);
-			return actor;*/
+			return actor;
 		}
 		throw std::runtime_error("Unknown actor type: " + type);
 	}

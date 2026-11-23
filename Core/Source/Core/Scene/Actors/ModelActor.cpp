@@ -5,6 +5,7 @@
 #include "Core/Renderer/AssetRegistry/MaterialLibrary.h"
 #include "Core/Application.h"
 #include "Actor.h"
+#include "Core/Utils/JsonUtils.h"
 
 #include <json.hpp>
 
@@ -28,7 +29,7 @@ namespace Actor {
 	void ModelActor::Serialize(nlohmann::json& j) const
 	{
 		Actor::Serialize(j);
-		j["ModelData"] = ModelToJson(m_ModelLibrary.Get(m_Model));
+		j[JsonKeys::ModelId] = m_Model.Value;
 	}
 
 	void ModelActor::GetProperties(PropertyList& list)
